@@ -1,0 +1,116 @@
+version: "3.1"
+
+rules:
+
+- rule:
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: celula
+  steps:
+  - intent: selecionar_celulas
+  - action: utter_cel
+  # priority: 1
+
+- rule: area
+  steps:
+   - intent: selecionar_area
+   - action: utter_area
+
+- rule: estilo
+  steps:
+  - intent: estilo_texto
+  - action: utter_stile
+
+- rule: tamanho
+  steps:
+  - intent: alterar_tamanho_texto
+  - action: utter_tamanho
+
+- rule: tamanho_aumentar
+  steps:
+  - intent: aumentar_tamanho_texto
+  - action: utter_tamanho
+
+- rule: tamanho_diminuir
+  steps:
+  - intent: diminuir_tamanho_texto
+  - action: utter_tamanho
+
+- rule: valor
+  steps:
+  - intent: escrever_conteudo
+  - action: utter_valor
+
+- rule: color
+  steps:
+  - intent: change_color
+  - action: utter_color
+
+- rule: borda
+  steps:
+  - intent: definir_limites
+  - action: utter_borda
+
+- rule: salvar
+  steps:
+  - intent: salvar
+  - action: utter_salvar
+
+- rule: fechar
+  steps:
+  - intent: fechar
+  - action: utter_fechar
+
+- rule: copiar
+  steps:
+  - intent: copiar
+  - action: utter_copiar
+
+- rule: colar
+  steps:
+  - intent: colar
+  # - action: action_clear_slot
+  - action: utter_colar
+
+- rule: apagar
+  steps:
+  - intent: apagar
+  - action: utter_apagar
+
+- rule: ajuda
+  steps:
+  - intent: ajuda
+  - action: utter_ajuda
+
+- rule: limpar
+  steps:
+  - intent: limpar
+  - action: utter_limpar
+
+- rule: direcionar
+  steps:
+  - intent: direcionar
+  - action: utter_direcionar
+
+- rule: orientar
+  steps:
+  - intent: orientar
+  - action: utter_orientar
+
+- rule: matematica
+  steps:
+  - intent: matematica
+  - action: utter_matematica
+
+# - rule: Add_reminder to calendar
+#   steps:
+#   - intent: add_reminder
+#   - action: action_create_event
+#   - action: utter_anyelse

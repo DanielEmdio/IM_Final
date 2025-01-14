@@ -1,0 +1,11 @@
+.centered-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 160px; /* Adjust the width as needed */
+    height: 160px; /* Adjust the height as needed */
+    padding: 0; /* Remove any default padding */
+    border: none; /* Remove any default border */
+    background: none; /* Remove any default background */
+  }
+

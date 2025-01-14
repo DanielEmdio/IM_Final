@@ -1,0 +1,197 @@
+version: '3.1'
+intents:
+- greet
+- goodbye
+- affirm
+- deny
+- selecionar_area
+- selecionar_celulas
+- escrever_conteudo
+- alterar_tamanho_texto
+- aumentar_tamanho_texto
+- diminuir_tamanho_texto
+- estilo_texto
+- change_color
+- definir_limites
+- salvar
+- fechar
+- copiar
+- colar
+- apagar
+- ajuda
+- limpar
+- direcionar
+- orientar
+- matematica
+
+entities:
+#- celula-1
+#- celula-2 
+- celula
+- valor
+- tamanho
+- estilo
+- color
+- shape
+- borda
+- direcao
+- formula
+
+
+slots:
+  switch:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: switch
+  place:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: place
+  shape:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: shape
+  color:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: color
+
+  celula:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: celula
+
+  valor:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: valor
+
+  estilo:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: estilo
+
+  tamanho:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: tamanho
+
+  borda:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: borda
+
+  direcao:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: direcao
+
+  formula:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: formula
+  
+  
+responses:
+  utter_greet:
+  - text: Olá, como posso ajudar? Pode perguntar caso não saiba as funcionalidades disponíveis.
+  utter_done:
+  - text: Okay! Está marcado {event} às {hour}!
+  utter_cancel:
+  - text: Okay! Está cancelado!
+  utter_goodbye:
+  - text: Adeus!
+  - text: Lembre-se, estou sempre à sua disposição!
+  utter_default:
+  - text: Desculpe, não percebi. Pode repetir?
+  utter_joke:
+  - text: Qual é o contrário de paixão? Mãe teto.
+  - text: Por que é que o polícia não usa sabão? Porque prefere deter gente.
+  - text: Por que é que o panado se divorciou? Porque a mulher não servia panada.
+  - text: Qual é a diferença entre o cavalo e o palhaço? Um gosta de palha crua e o outro de palhaçada.
+  - text: Qual é a diferença entre um padre e um Mercedes? O padre reza e o Mercedes Benz
+
+  utter_cel:
+  - text: Celula escolhida -> {celula}
+
+  utter_stile:
+  - text: Estilo a -> {estilo}
+
+  utter_tamanho:
+  - text: Letra para tamanho -> {tamanho} 
+
+  utter_valor:
+  - text: Escrever -> {valor}
+
+  utter_color:
+  - text: Cor {color} no/a {shape}
+
+  utter_borda:
+   - text: Aplicar {borda} na celula
+
+  utter_area:
+  - text: Area ate {celula}
+
+  utter_salvar:
+  - text: Ficheiro salvo
+
+  utter_fechar:
+  - text: Vais te lixar com o feedback, a fechar... 
+
+  utter_copiar:
+  - text: Copiar {celula}
+
+  utter_colar:
+  - text: Colar em {celula}
+
+  utter_apagar:
+  - text: Vou apagar na celula {celula}
+
+  utter_ajuda:
+  - text: Precisas de ajuda é?
+
+  utter_limpar:
+  - text: vou tirar as formatações e estilos
+
+  utter_direcionar:
+  - text: vou mover para a celula de {direcao}
+
+  utter_orientar:
+  - text: tu estas na {celula}
+
+  utter_matematica:
+  - text: calcular {formula} até {celula}
+
+
+
+
+actions:
+- action_greet_user
+- utter_goodbye
+- action_switch_lights
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

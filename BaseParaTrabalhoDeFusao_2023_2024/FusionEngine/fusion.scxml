@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:commons="http://commons.apache.org/scxml" xmlns:emma="http://www.w3.org/2003/04/emma" xmlns:mmi="http://www.w3.org/2008/04/mmi-arch" xmlns:schemaLocation="http://www.w3.org/2005/07/scxml scxml.xsd http://commons.apache.org/scxml commons.xsd http://www.w3.org/2008/04/mmi-arch mmi.xsd http://www.w3.org/2003/04/emma emma.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" initialstate="init">
+  <datamodel>
+    <data name="data1" />
+    <data name="data2" />
+  </datamodel>
+  <state id="init">
+    <onentry>
+      <log label="[init]" expr="READY" />
+    </onentry>
+    <transition target="main" />
+  </state>
+  <state id="main">
+    <onentry>
+      <log label="[main]" expr="READY" />
+    </onentry>
+    <transition target="sspeech[speech][apagar]" event="[SPEECH][APAGAR]" />
+    <transition target="sspeech[speech][alterar_tamanho_texto]" event="[SPEECH][ALTERAR_TAMANHO_TEXTO]" />
+    <transition target="sgestures[gestures][previousws]" event="[GESTURES][PREVIOUSWS]" />
+    <transition target="sspeech[speech][escrever_conteudo]" event="[SPEECH][ESCREVER_CONTEUDO]" />
+    <transition target="sgestures[gestures][cut]" event="[GESTURES][CUT]" />
+  </state>
+  <state id="sspeech[speech][apagar]">
+    <onentry>
+      <log label="[sspeech[speech][apagar]]" expr="READY" />
+      <assign name="data1" expr="${_eventdata.data}" />
+      <send id="state1-timer-sspeech[speech][apagar]" event="timeout-sspeech[speech][apagar]" delay="5000" target="" targettype="" namelist="" />
+    </onentry>
+    <transition target="main" event="timeout-sspeech[speech][apagar]" />
+    <transition target="sspeech[speech][apagar]-gestures[gestures][cut]" event="[GESTURES][CUT]" />
+    <onexit>
+      <cancel sendid="state1-timer-sspeech[speech][apagar]" />
+    </onexit>
+  </state>
+  <state id="sspeech[speech][apagar]-gestures[gestures][cut]">
+    <onentry>
+      <log label="[sspeech[speech][apagar]-gestures[gestures][cut]]" expr="READY" />
+      <assign name="data2" expr="${_eventdata.data}" />
+      <commons:var name="startRequest" expr="${mmi:newStartRequestF(contextId, 'FUSION', 'IM', mmi:newRequestId(contextId), null, data1,data2, '[FUSION][APAGAR]')}" />
+      <send event="APAGAR" target="IM" targettype="MC" namelist="startRequest" />
+    </onentry>
+    <transition target="main" />
+  </state>
+  <state id="sspeech[speech][alterar_tamanho_texto]">
+    <onentry>
+      <log label="[sspeech[speech][alterar_tamanho_texto]]" expr="READY" />
+      <assign name="data1" expr="${_eventdata.data}" />
+      <send id="state1-timer-sspeech[speech][alterar_tamanho_texto]" event="timeout-sspeech[speech][alterar_tamanho_texto]" delay="0" target="" targettype="" namelist="" />
+    </onentry>
+    <transition target="speech[speech][alterar_tamanho_texto]-final" event="timeout-sspeech[speech][alterar_tamanho_texto]" />
+    <onexit>
+      <cancel sendid="state1-timer-sspeech[speech][alterar_tamanho_texto]" />
+    </onexit>
+  </state>
+  <state id="speech[speech][alterar_tamanho_texto]-final">
+    <onentry>
+      <log label="[speech[speech][alterar_tamanho_texto]-final]" expr="READY" />
+      <commons:var name="startRequest" expr="${mmi:newStartRequestF2(contextId, 'FUSION', 'IM', mmi:newRequestId(contextId), null, data1, '[FUSION][ALTERAR_TAMANHO_TEXTO][TAMANHO]')}" />
+      <send event="ALTERAR_TAMANHO_TEXTO" target="IM" targettype="MC" namelist="startRequest" />
+    </onentry>
+    <transition target="main" />
+  </state>
+  <state id="sgestures[gestures][previousws]">
+    <onentry>
+      <log label="[sgestures[gestures][previousws]]" expr="READY" />
+      <assign name="data1" expr="${_eventdata.data}" />
+      <send id="state1-timer-sgestures[gestures][previousws]" event="timeout-sgestures[gestures][previousws]" delay="0" target="" targettype="" namelist="" />
+    </onentry>
+    <transition target="gestures[gestures][previousws]-final" event="timeout-sgestures[gestures][previousws]" />
+    <onexit>
+      <cancel sendid="state1-timer-sgestures[gestures][previousws]" />
+    </onexit>
+  </state>
+  <state id="gestures[gestures][previousws]-final">
+    <onentry>
+      <log label="[gestures[gestures][previousws]-final]" expr="READY" />
+      <commons:var name="startRequest" expr="${mmi:newStartRequestF2(contextId, 'FUSION', 'IM', mmi:newRequestId(contextId), null, data1, '[FUSION][PREVIOUSWS]')}" />
+      <send event="WS_PREVIOUS" target="IM" targettype="MC" namelist="startRequest" />
+    </onentry>
+    <transition target="main" />
+  </state>
+  <state id="sspeech[speech][escrever_conteudo]">
+    <onentry>
+      <log label="[sspeech[speech][escrever_conteudo]]" expr="READY" />
+      <assign name="data1" expr="${_eventdata.data}" />
+      <send id="state1-timer-sspeech[speech][escrever_conteudo]" event="timeout-sspeech[speech][escrever_conteudo]" delay="5000" target="" targettype="" namelist="" />
+    </onentry>
+    <transition target="main" event="timeout-sspeech[speech][escrever_conteudo]" />
+    <transition target="sspeech[speech][escrever_conteudo]-gestures[gestures][scrollr]" event="[GESTURES][SCROLLR]" />
+    <onexit>
+      <cancel sendid="state1-timer-sspeech[speech][escrever_conteudo]" />
+    </onexit>
+  </state>
+  <state id="sspeech[speech][escrever_conteudo]-gestures[gestures][scrollr]">
+    <onentry>
+      <log label="[sspeech[speech][escrever_conteudo]-gestures[gestures][scrollr]]" expr="READY" />
+      <assign name="data2" expr="${_eventdata.data}" />
+      <commons:var name="startRequest" expr="${mmi:newStartRequestF(contextId, 'FUSION', 'IM', mmi:newRequestId(contextId), null, data1,data2, '[FUSION][BOLD_ESCREVER_CONTEUDO]')}" />
+      <send event="BOLD_ESCREVER_CONTEUDO" target="IM" targettype="MC" namelist="startRequest" />
+    </onentry>
+    <transition target="main" />
+  </state>
+  <state id="sgestures[gestures][cut]">
+    <onentry>
+      <log label="[sgestures[gestures][cut]]" expr="READY" />
+      <assign name="data1" expr="${_eventdata.data}" />
+      <send id="state1-timer-sgestures[gestures][cut]" event="timeout-sgestures[gestures][cut]" delay="5000" target="" targettype="" namelist="" />
+    </onentry>
+    <transition target="main" event="timeout-sgestures[gestures][cut]" />
+    <transition target="sgestures[gestures][cut]-speech[speech][apagar]" event="[SPEECH][APAGAR]" />
+    <onexit>
+      <cancel sendid="state1-timer-sgestures[gestures][cut]" />
+    </onexit>
+  </state>
+  <state id="sgestures[gestures][cut]-speech[speech][apagar]">
+    <onentry>
+      <log label="[sgestures[gestures][cut]-speech[speech][apagar]]" expr="READY" />
+      <assign name="data2" expr="${_eventdata.data}" />
+      <commons:var name="startRequest" expr="${mmi:newStartRequestF(contextId, 'FUSION', 'IM', mmi:newRequestId(contextId), null, data1,data2, '[FUSION][APAGAR]')}" />
+      <send event="APAGAR" target="IM" targettype="MC" namelist="startRequest" />
+    </onentry>
+    <transition target="main" />
+  </state>
+</scxml>

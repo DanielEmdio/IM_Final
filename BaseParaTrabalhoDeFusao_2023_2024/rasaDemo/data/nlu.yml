@@ -1,0 +1,488 @@
+version: "3.1"
+nlu:
+
+- intent: greet
+  examples: |
+    - Oi Assistente
+    - Bom dia, Assistente
+    - Boa tarde, Assistente
+    - Boa noite, Assistente
+    - Olá Assistente
+    - Olá assistente
+    - olá
+    - olá assistente
+    - olá assistnete
+    
+- intent: goodbye
+  examples: |
+    - Xau, Assistente
+    - Adeus, Assistente
+    - Até logo, Assistente
+    - Boa noite, Assistente
+    - Até amanhã, Assistente
+
+- intent: affirm
+  examples: |
+    - Sim
+    - Claro
+    - Parece-me bem
+    - Correto
+    - Okay
+    - Ok
+    - sim
+
+- intent: deny
+  examples: |
+    - Não
+    - Nope
+    - Nunca
+    - Acho que não
+    - Não gosto assim
+    - Nem por isso
+
+- intent: change_color
+  examples: |
+    - Mudar a cor do [texto](shape) para  [verde](color)
+    - Mudar o [preenchimento](shape) para  [vermelho](color)
+    - Alterar a cor do [texto](shape) para  [amarelo](color)
+    - Mudar a cor do [preenchimento](shape) para  [azul](color)
+    - Alterar o [texto](shape) para  [verde](color)
+    - Mudar a cor do [preenchimento](shape) para  [vermelho](color)
+    - Por o [texto](shape) em  [amarelo](color)
+    - Mudar para [azul](color) o [preenchimento](shape) 
+    - Alterar para [amarelo](color) o [texto](shape)
+    - Alterar o [preenchimento](shape) para  [castanho](color)
+    - Mudar o [texto](shape) para  [cinzento](color)
+    - Alterar o [preenchimento](shape) para  [laranja](color)
+    - Por a cor do [texto](shape) em  [rosa](color)
+    - Mudar a cor do [preenchimento](shape) para  [preto](color)
+    - Por o [texto](shape) em  [branco](color)
+    - Mudar para [azul](color) o [preenchimento](shape)
+
+- intent: selecionar_area
+  examples: |
+    - Faz uma área até [a3](celula)
+    - Área a [y7](celula)
+    - Seleciona até [b10](celula)
+    - Faz uma área até [c5](celula)
+    - Define uma área até [d8](celula)
+    - Destaca até [f7](celula)
+    - Cria uma área até [g4](celula)
+    - Faz uma seleção até [h9](celula)
+    - Marca o intervalo até [i6](celula)
+    - Estende até [j3](celula)
+    - Amplia a área até [k12](celula)
+    - Vai até [l5](celula) para definir a área
+    - Define o limite até [m10](celula)
+    - Cria um bloco até [n8](celula)
+    - Faz um destaque até [o1](celula)
+    - Seleciona toda a área até [p4](celula)
+    - Expande até [q7](celula)
+    - Marca o final da área em [r3](celula)
+    - Faz a seleção até [s9](celula)
+    - Quero que vá até [t11](celula) para selecionar
+    - Estabelece a área até [u5](celula)
+    - Estica a seleção até [v8](celula)
+    - Quero destacar até [w4](celula)
+    - Define o alcance até [x9](celula)
+    - Marca até [z6](celula)
+
+- intent: selecionar_celulas
+  examples: | 
+    - Seleciona a célula [a1](celula)
+    - Célula [b10](celula)
+    - Vai para a celula [h4](celula)
+    - Quero ir para [v6](celula)
+    - Vai para [d14](celula)
+    - Selecionar [c5](celula)
+    - Ir para [k12](celula)
+    - Mover para [e7](celula)
+    - Posicionar em [f3](celula)
+    - Escolhe a célula [g8](celula)
+    - Seleciona a célula [j3](celula)
+    - Vai para a célula [l9](celula)
+    - Quero selecionar [m11](celula)
+    - Posiciona-te em [n5](celula)
+    - Mover o cursor para [o2](celula)
+    - Ir até [p6](celula)
+    - Quero ir para a célula [r10](celula)
+    - Foca em [s1](celula)
+    - Por favor, selecciona [t4](celula)
+    - Escolhe a célula [v3](celula)
+    - Quero mover para [x7](celula)
+    - Vai até [y12](celula)
+    - Posiciona na célula [z5](celula)
+    - Vai directamente para [b3](celula)
+    - Marca a célula [c7](celula)
+    - Avança para [e9](celula)
+    - Troca para a célula [f6](celula)
+    - Dirige-te para [g4](celula)
+    - Indica a célula [h8](celula)
+    - Selecionar diretamente [i2](celula)
+    - Vai para [j15](celula), por favor
+    - Localiza [k8](celula)
+    - Quero que selecciones [a10](celula)
+    - Vai até à célula [b14](celula)
+    - Marca [c12](celula)
+    - Destaca [d5](celula)
+    - Salta para [f1](celula)
+    - Ajusta para [h6](celula)
+    - Define a célula como [k3](celula)
+    - Posiciona a seleção em [l11](celula)
+    - Selecionar o intervalo [a1](celula)
+    - Vai para a seguinte célula [g5](celula)
+    - Quero apontar para [d2](celula)
+    - Aponta para [b13](celula)
+    - Ajusta o cursor para [c8](celula)
+    - Quero estar em [n2](celula)
+    - Alinha com [q3](celula)
+    - Vai à célula [r7](celula)
+
+- intent: escrever_conteudo
+  examples: | 
+    - Quero escrever [recurso e melhoria](valor)
+    - Coloca [Afonso Baixo](valor)
+    - Agora escreve [três tigelas de trigo para três tigres tristes](valor)
+    - Podes escrever [Microsoft Windows](valor)
+    - Quero colocar [circulo](valor) 
+    - Por favor escreve [zero zero sete](valor)
+    - Escreve [O Daniel é espetacular](valor)
+    - Na celula escreve [O Henrique é da madeira](valor)
+    - Adiciona [um valor importante](valor)
+    - Escreve [sistema operativo Linux](valor)
+    - Coloca [quarenta e dois](valor)
+    - Adiciona [o nome da empresa é Alfa](valor)
+    - Gostava de escrever [cinco mil quinhentos e cinquenta](valor)
+    - Insere [nova atualização disponível](valor)
+    - Quero preencher com [dado atualizado](valor)
+    - Pode colocar [resultado final](valor)
+    - Escreve na célula [O João foi ao mercado](valor)
+    - Por favor, insere [exemplo de texto genérico](valor)
+    - Adiciona [código 123-ABC](valor)
+    - Coloque no campo [informação confidencial](valor)
+    - Agora quero escrever [aula de segunda-feira](valor)
+    - Adiciona à célula [relatório completo](valor)
+    - Insere [Maria Silva](valor)
+    - Pode preencher com [venda confirmada](valor)
+    - Coloca o texto [planilha preenchida com sucesso](valor)
+    - Digita [próxima tarefa reunião](valor)
+    - Preenche com [resultado da pesquisa](valor)
+    - Quero inserir [nota máxima obtida](valor)
+    - Escreve o seguinte [formato aceite](valor)
+    - Pode adicionar [desempenho excepcional](valor)
+    - Coloca [informação sobre o cliente](valor)
+    - Digita [saldo disponível](valor)
+    - Adiciona [nova meta para o trimestre](valor)
+    - Quero que insira [projecto em andamento](valor)
+    - Escreve [dados do cliente Pedro](valor)
+    - Coloca [final do relatório](valor)
+    - Adiciona [erro crítico detectado](valor)
+    - Insere [saldo negativo](valor)
+    - Preenche com [o custo total é 2.500](valor)
+    - Quero colocar o seguinte [meta atingida](valor)
+    - Escreve aí [a resposta está correcta](valor)
+    - Digite [campeão da época 2024](valor)
+    - Coloque [confirmação de pagamento](valor)
+    - Insere [contacto 912345678](valor)
+    - Adiciona [nova nota de rodapé](valor)
+    - Escreve na célula [Lisboa é a capital de Portugal](valor)
+    - Podes preencher com [valor por confirmar](valor)
+
+- intent: alterar_tamanho_texto
+  examples: | 
+    - Muda tamanho da letra para [21](tamanho)
+    - Letra a [23](tamanho)
+    - [18](tamanho) tamanho de letra
+    - Mete o tamanho [14](tamanho)
+    - Letra a [20](tamanho)
+    - Altera o tamanho de letra para [55](tamanho)
+    - Letra [12](tamanho)
+
+- intent: aumentar_tamanho_texto
+  examples: | 
+    - Aumentar letra
+    - Aumenta o tamanho
+    - Aumentar tamanho da letra
+    - Aumentar o tamanho
+    - Texto maior
+    - Letra maior
+    - Cresce o texto
+    - Sobe o tamanho
+    - Aumenta o tamanho de letra para [44](tamanho)
+    - Cresce a letra para [12](tamanho)
+
+- intent: diminuir_tamanho_texto
+  examples: | 
+    - Reduzir o tamanho
+    - Diminuir texto
+    - Reduz tamanho da letra
+    - Diminuir tamanho da letra
+    - Letra mais pequena
+    - Texto menor
+    - Diminui para [10](tamanho)
+    - Decresce o tamanho de letra para [8](tamanho)
+    - Reduz para [6](tamanho)
+    - Tamanho de letra menor
+
+- intent: estilo_texto
+  examples: | 
+    - Coloca a [negrito](estilo)
+    - Texto a [itálico](estilo)
+    - Estilo [sublinhado](estilo)
+    - Aplicar [sublinhado](estilo)
+    - [negrito](estilo)
+    - [sublinhado](estilo)
+    - [itálico](estilo)
+
+- intent: definir_limites
+  examples: |
+    - Adicionar [todas](borda) as bordas  
+    - Colocar borda do lado [direito](borda)
+    - Borda [inferior](borda)
+    - Aplicar borda [superior](borda)
+    - Põe bordas [externas](borda)
+    - Quero bordas [internas](borda)
+    - Faz um contorno [sem](borda) bordas
+    - Adicionar [todos](borda) os limites
+    - Definir limites [todos](borda)
+    - Aplicar limites [todos](borda)
+    - Criar limites [exteriores](borda)
+    - Adicionar limite no lado [direito](borda)
+    - Definir limite [superior](borda)
+    - Colocar limite [inferior](borda)
+    - Marcar limite [esquerdo](borda)
+
+- intent: salvar
+  examples: |
+    - Guardar  
+    - Salvar ficheiro
+    - Crontrol s
+    - Salvar alterações
+    - Salvar
+    - Registar mudanças
+    - Guarda o ficheiro
+    - Quero guardar 
+    - Guarda
+    - Salva
+    - Regista
+
+- intent: fechar
+  examples: |
+    - Fechar
+    - Sair 
+    - Fechar o ficheiro 
+    - Podes sair 
+    - Encerrar 
+    - Fecha
+    - Sai 
+    
+- intent: copiar
+  examples: |
+    - copia
+    - copiar
+    - controle c 
+    - copia a celula [a1](celula)
+    - copia [y7](celula)
+    - copiar [r4](celula) 
+    - copiar celula [ty56](celula)
+    - controle c na [n55](celula)
+
+- intent: colar
+  examples: |
+    - colar
+    - cola 
+    - controle v  
+    - cola aqui
+    - colar em [a1](celula)
+    - cola em [d3](celula)
+    - controle v em [g6](celula)
+    - cola na [u8](celula)
+    
+- intent: apagar
+  examples: |
+    - apagar
+    - apaga 
+    - delete  
+    - tira isso
+    - tirar
+    - apaga em [a1](celula)
+    - apagar [d3](celula)
+    - limpa [g6](celula)
+    - limpar [s89](celula)
+    - tiro o que está em [u8](celula)
+    - quero apagar o connteudo de [r56](celula)
+    - apague isso
+    - limpa
+    - da delete no que está aí
+    - quero limpar
+    - tira o conteúdo da célula [b2](celula)
+    - limpa a célula [h8](celula)
+    - apaga a informação em [d9](celula)
+    - remover os dados de [g12](celula)
+    - quero resetar a célula [e5](celula)
+    - apaga o valor em [f3](celula)
+    - pode apagar o que está em [a7](celula)?
+    - esvazie [c2](celula)
+    - quero tirar os dados de [g4](celula)
+    - limpe os valores em [d1](celula)
+    - apague o que foi preenchido na célula [b6](celula)
+    - quero dara delete o que está em [i9](celula)
+    - podes limpar o conteúdo de [l7](celula)
+    - remove o que está em [a10](celula)
+  
+- intent: ajuda
+  examples: |
+    - Preciso de ajuda
+    - Podes ajudar-me?
+    - Como funciona isto?
+    - Não sei o que fazer
+    - Explica-me como usar
+    - Podes dar-me uma ajuda?
+    - Ajuda, por favor
+    - O que posso fazer?
+    - Estou perdido, ajuda
+    - Preciso de assistência
+    - Como é que isto funciona?
+    - Dá-me uma explicação
+    - Podes orientar-me?
+    - Mostra-me como funciona
+    - Preciso de ajuda com isto
+    - Ensina-me a fazer
+    - Preciso de suporte
+    - Podes dar uma mãozinha?
+    - Tens instruções?
+    - Onde posso obter ajuda?
+    - Explica-me o que fazer
+    - Como posso começar?
+    - Preciso de uma explicação
+
+- intent: limpar
+  examples: |
+    - Remove a formatação
+    - Limpa a formatação desta célula
+    - Quero que retires o estilo
+    - Elimina o formato aplicado
+    - Tira as alterações de estilo
+    - Limpa o formato desta área
+    - Remove as configurações de formatação
+    - Restaura a formatação original
+    - Volta ao formato padrão
+    - Quero reverter o estilo
+    - Tira o formato
+    - Remove os ajustes de formatação
+    - Limpa os estilos personalizados
+    - Restaura ao formato inicial
+    - Remove qualquer personalização de estilo
+    - Deixa sem formatação
+    - Faz um reset da formatação
+    - Retira o formato aplicado
+    - Limpa o estilo
+    - Remove o estilo da célula
+    - Quero a célula sem estilo
+    - Formata de novo para o padrão
+    - Elimina qualquer alteração de formato
+    - Reverte para o formato original
+    - Faz um reset do estilo
+    - Quero retirar o aspecto visual
+    - Limpa a aparência da célula
+    - Deixa a célula no formato básico
+    - Remove o esquema de formatação
+
+- intent: direcionar
+  examples: |
+    - Vai para a célula [acima](direcao)
+    - Move-te para a célula [abaixo](direcao)
+    - Desloca para a célula à [esquerda](direcao)
+    - Desloca para a célula à [direita](direcao)
+    - Vai para a célula [seguinte](direcao)
+    - Quero ir para a célula [anterior](direcao)
+    - Move para a célula vizinha de [cima](direcao)
+    - Desloca para a célula [inferior](direcao)
+    - Posiciona-te na célula vizinha à [direita](direcao)
+    - Quero ir para a célula vizinha à [esquerda](direcao)
+    - Vai para a [próxima](direcao) célula
+    - Avança para a célula [seguinte](direcao)
+    - Regressa à célula [anterior](direcao)
+    - Quero deslocar-me para [baixo](direcao)
+    - Vai para o lado [direito](direcao)
+    - Passa para a célula lateral [esquerda](direcao)
+    - Sobe para a célula [acima](direcao)
+    - Move-te para a célula imediatamente [abaixo](direcao)
+    - Quero ir para a célula [acima](direcao) da atual
+    - Move-te para a célula imediatamente à [esquerda](direcao)
+    - Quero avançar uma célula à [direita](direcao)
+    - Vai para a vizinha de [baixo](direcao)
+
+- intent: orientar
+  examples: |
+    - Em que célula estou?
+    - Qual é a minha célula atual?
+    - Onde estou agora?
+    - Pode me dizer em que célula estou?
+    - Qual é a célula em que estou?
+    - Quero saber minha célula atual
+    - Em que célula me encontro?
+    - Qual é a célula onde estou?
+    - Pode me informar minha célula atual?
+    - Qual é a célula atual?
+  
+- intent: matematica
+  examples: |
+    - Calcule a [soma](formula) até a célula [A10](celula)
+    - [média](formula) até a célula [B5](celula)
+    - [mediana] os valores até a célula [C3](celula)
+    - [soma] os números até a célula [D7](celula)
+    - Encontre o [máximo](formula) até a célula [E2](celula)
+    - Encontre o [mínimo](formula) até a célula [F4](celula)
+    - Valor da [soma](formula) até a célula [G6](celula)
+    - Calcule a [mediana](formula) até a célula [H8](celula)
+    - [media](formula) até a célula [I9](celula)
+    - Encontre a [mediana](formula) até a célula [J1](celula)
+    
+
+- regex: celula
+  examples: |
+    - [A-Za-z]+[0-9]+
+
+
+- lookup: estilo
+  examples: |
+    - negrito
+    - italico
+    - sublinhado
+
+- lookup: direcao
+  examples: |
+    - cima
+    - acima
+    - abaixo
+    - baixo
+    - esquerda
+    - anterior
+    - direita
+    - próximo
+    - seguinte
+
+- lookup: formula
+  examples: |
+    - soma
+    - média
+    - mediana
+    - máximo
+    - minimo
+
+- lookup: bordas
+  examples: |
+    - inferior
+    - superior
+    - esquerda
+    - direita
+    - esquerdo
+    - direito
+    - sem
+    - todos
+    - exteriores
+    
+#    - Tirar [sublinhado](estilo)
+#    - Remover [negrito](estilo)
+#    - Remove o estilo [itálico](estilo)
