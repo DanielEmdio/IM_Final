@@ -130,27 +130,11 @@ namespace Excel2_0
 
             intent = intent.ToLower();
 
-            switch (intent)
+            if(LastIntent != null)
             {
-                case "ignore":
-                    Console.WriteLine("Ignoring current instruction and waiting for next message...");
-                    return;
-
-                case "greet":
-                    Console.WriteLine("Hello :)");
-                    await App.SendMessage(client, App.messageMMI("Olá como posso ajudar?"));
-                    return;
-
-                case "goodbye":
-                    Console.WriteLine("Do you want to close the program?");
-                    LastIntent = "fechar";
-                    await App.SendMessage(client, App.messageMMI("Queres sair do programa? Eu posso encerralo se quiseres"));
-                    return;
-
-                case "denny":
-                case "affirm":
-                    if (LastIntent == "fechar")
-                    {
+                switch(LastIntent)
+                {
+                    case "fechar":
                         if (intent == "deny")
                         {
                             Console.WriteLine("Ok, I wont't close the file.");
@@ -168,9 +152,7 @@ namespace Excel2_0
                             await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, ainda queres fechar o programa?"));
                         }
                         return;
-                    }
-                    else if (LastIntent == "matematica")
-                    {
+                    case "matematica":
                         if (intent == "deny")
                         {
                             Console.WriteLine("Ok vou descartar o valor calculado.");
@@ -190,16 +172,15 @@ namespace Excel2_0
                             await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, se queres diz onde queres que coloque, se não, diz que não"));
                         }
                         return;
-                    }
-                    else if (LastIntent == "search")
-                    {
+                    case "search":
                         if (intent == "deny")
                         {
-                            if(foundCells.Count > 1) {
+                            if (foundCells.Count > 1)
+                            {
                                 foundCells.RemoveAt(0);
                                 ExcelRange excelRange = ws.Cells[foundCells[0].Item1, foundCells[0].Item2];
                                 SelectCell(excelRange);
-                                await App.SendMessage(client, App.messageMMI($"Encontrei na linha {foundCells[0].Item1} coluna {foundCells[0].Item2}"));
+                                await App.SendMessage(client, App.messageMMI($"Encontrei na linha {foundCells[0].Item1} coluna {GetColumnLetter(foundCells[0].Item2)}"));
                                 await App.SendMessage(client, App.messageMMI($"É esta a celula que tu queres?"));
 
                             }
@@ -207,7 +188,7 @@ namespace Excel2_0
                             {
                                 ExcelRange excelRange = ws.Cells[foundCells[0].Item1, foundCells[0].Item2];
                                 SelectCell(excelRange);
-                                await App.SendMessage(client, App.messageMMI($"Ultimo celula encontrada, linha {foundCells[0].Item1} coluna {foundCells[0].Item2}"));
+                                await App.SendMessage(client, App.messageMMI($"Ultimo celula encontrada, linha {foundCells[0].Item1} coluna {GetColumnLetter(foundCells[0].Item2)}"));
                                 LastIntent = null;
                                 foundCells.Clear();
                             }
@@ -218,7 +199,7 @@ namespace Excel2_0
                                 LastIntent = null;
                                 foundCells.Clear();
                             }
-                            
+
                         }
                         else if (intent == "affirm")
                         {
@@ -230,8 +211,30 @@ namespace Excel2_0
                         {
                             Console.WriteLine("Sorry I didn't get that, Do you still want to do the search?");
                             await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, é esta a célula que queres?"));
-                        }   
-                    }
+                        }
+                        return;
+                }
+            }
+
+            switch (intent)
+            {
+                case "ignore":
+                    Console.WriteLine("Ignoring current instruction and waiting for next message...");
+                    return;
+
+                case "greet":
+                    Console.WriteLine("Hello :)");
+                    await App.SendMessage(client, App.messageMMI("Olá como posso ajudar?"));
+                    return;
+
+                case "goodbye":
+                    Console.WriteLine("Do you want to close the program?");
+                    LastIntent = "fechar";
+                    await App.SendMessage(client, App.messageMMI("Queres sair do programa? Eu posso encerralo se quiseres"));
+                    return;
+
+                case "denny":
+                case "affirm":
                     Console.WriteLine("Nothing to affirm or denny I think...");
                     return;
 
@@ -462,17 +465,17 @@ namespace Excel2_0
                 case "negrito":
                     cell.Font.Bold = true;
                     Console.WriteLine($"Changed style to bold at row {cell.Row}, column {cell.Column}");
-                    await App.SendMessage(client, App.messageMMI($"Apliquei negrito na linha {cell.Row}, coluna {cell.Column}"));
+                    await App.SendMessage(client, App.messageMMI($"Apliquei negrito na linha {cell.Row}, coluna {GetColumnLetter(cell.Column)}"));
                     break;
                 case "itálico":
                     cell.Font.Italic = true;
                     Console.WriteLine($"Changed style to italic at row {cell.Row}, column {cell.Column}");
-                    await App.SendMessage(client, App.messageMMI($"Apliquei itálico na linha {cell.Row}, coluna {cell.Column}"));
+                    await App.SendMessage(client, App.messageMMI($"Apliquei itálico na linha {cell.Row}, coluna {GetColumnLetter(cell.Column)}"));
                     break;
                 case "sublinhado":
                     cell.Font.Underline = XlUnderlineStyle.xlUnderlineStyleSingle;
-                    await App.SendMessage(client, App.messageMMI($"Apliquei sublinhado na linha {cell.Row}, coluna {cell.Column}"));
-                    Console.WriteLine($"Changed style to underline at row {cell.Row}, column {cell.Column}");
+                    await App.SendMessage(client, App.messageMMI($"Apliquei sublinhado na linha {cell.Row}, coluna {GetColumnLetter(cell.Column)}"));
+                    Console.WriteLine($"Changed style to underline at row {cell.Row}, column {GetColumnLetter(cell.Column)}");
                     break;
                 default:
                     Console.WriteLine("Unknown style.");
@@ -493,12 +496,12 @@ namespace Excel2_0
                 case "texto":
                     cell.Font.Color = ColorTranslator.ToOle(color);
                     Console.WriteLine($"Changed text color at {cell.Row}, column {cell.Column}");
-                    await App.SendMessage(client, App.messageMMI($"Mudei a cor do {colorType} para {corName} na linha {cell.Row}, coluna {cell.Column}"));
+                    await App.SendMessage(client, App.messageMMI($"Mudei a cor do {colorType} para {corName} na linha {cell.Row}, coluna {GetColumnLetter(cell.Column)}"));
                     break;
                 case "preenchimento":
                     cell.Interior.Color = ColorTranslator.ToOle(color);
                     Console.WriteLine($"Changed preechimento color at row {cell.Row}, column {cell.Column}");
-                    await App.SendMessage(client, App.messageMMI($"Mudei a cor do {colorType} para {corName} na linha {cell.Row}, coluna {cell.Column}"));
+                    await App.SendMessage(client, App.messageMMI($"Mudei a cor do {colorType} para {corName} na linha {cell.Row}, coluna {GetColumnLetter(cell.Column)}"));
                     break;
                 default:
                     Console.WriteLine("Unknown type. Use 'texto' ou 'preenchimento'.");
@@ -826,7 +829,7 @@ namespace Excel2_0
                 ExcelRange range = ParseExcelReference(data["celula"]);
                 SelectCell(range);
                 Console.WriteLine($"Selected cell at row {range.Row}, column {range.Column}");
-                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 await Task.CompletedTask;
             }
             catch{ 
@@ -862,7 +865,7 @@ namespace Excel2_0
             //execution
             WriteToCell(range, value);
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Escrevi {value} na linha {range.Row}, coluna {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value} na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
   
@@ -894,7 +897,7 @@ namespace Excel2_0
             //execution
             ChangeSizeText(range, value);
             Console.WriteLine($"Changed size to {value} at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Mudei o tamanho  da celula {range.Row}, {range.Column} para {value}"));
+            await App.SendMessage(client, App.messageMMI($"Mudei o tamanho  da celula {range.Row}, {GetColumnLetter(range.Column)} para {value}"));
             await Task.CompletedTask;
         }
 
@@ -927,7 +930,7 @@ namespace Excel2_0
                 //execution
             ChangeSizeText(range, value);
             Console.WriteLine($"Changed size to {value} at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Mudei o tamanho  da celula {range.Row}, {range.Column} para {value}"));
+            await App.SendMessage(client, App.messageMMI($"Mudei o tamanho  da celula {range.Row}, {GetColumnLetter(range.Column)} para {value}"));
             await Task.CompletedTask;
         }
 
@@ -968,7 +971,7 @@ namespace Excel2_0
             //execution
             ChangeSizeText(range, value);
             Console.WriteLine($"Changed size to {value} at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Mudei o tamanho  da celula {range.Row}, {range.Column} para {value}"));
+            await App.SendMessage(client, App.messageMMI($"Mudei o tamanho  da celula {range.Row}, {GetColumnLetter(range.Column)} para {value}"));
             await Task.CompletedTask;
         }
 
@@ -1065,7 +1068,7 @@ namespace Excel2_0
 
                 SelectCell(range);
                 Console.WriteLine($"Selected cell range from ({startRow}, {startColumn}) to ({endRow}, {endColumn})");
-                await App.SendMessage(client, App.messageMMI($"Area selecionada da linha {startRow}, coluna {startColumn} ate a linha {endRow}, coluna {endColumn}"));
+                await App.SendMessage(client, App.messageMMI($"Area selecionada da linha {startRow}, coluna {GetColumnLetter(startColumn)} ate a linha {endRow}, coluna {GetColumnLetter(endColumn)}"));
                 await Task.CompletedTask;
             }
             catch{
@@ -1100,7 +1103,7 @@ namespace Excel2_0
             //execution
             Copy(range);
             Console.WriteLine($"Copied value at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Copiei o conteudo da celula {range.Row}, {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Copiei o conteudo da celula {range.Row}, {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
 
@@ -1133,7 +1136,7 @@ namespace Excel2_0
             //execution
             Paste(range);
             Console.WriteLine($"Pasted value at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Colei na celula {range.Row}, {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Colei na celula {range.Row}, {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
 
@@ -1165,7 +1168,7 @@ namespace Excel2_0
 
             //execution
             Console.WriteLine($"Deleted value at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Apaguei o que estava na celula da linha {range.Row}, coluna {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Apaguei o que estava na celula da linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             Delete(range);
             await Task.CompletedTask;
         }
@@ -1211,7 +1214,7 @@ namespace Excel2_0
             ClearStyle(range);
 
             Console.WriteLine($"Cleared all styles at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Removi os estilos da celula {range.Row}, {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Removi os estilos da celula {range.Row}, {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
 
         }
@@ -1250,7 +1253,7 @@ namespace Excel2_0
 
             if (IsSingleCell(range))
             {
-                await App.SendMessage(client, App.messageMMI($"Estás com uma única célula selecionada linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Estás com uma única célula selecionada linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 Console.WriteLine($" {range.Row}, {range.Column}");
             } else {
                 string address = range.Address;
@@ -1344,7 +1347,7 @@ namespace Excel2_0
             {
                 ExcelRange range = ParseExcelReference(data["celula"]);
                 WriteToCell(range, lastResult.ToString());
-                await App.SendMessage(client, App.messageMMI($"Coloquei o resultado na linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Coloquei o resultado na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 await Task.CompletedTask;
             }
             catch
@@ -1447,7 +1450,7 @@ namespace Excel2_0
             Copy(range);
             Delete(range);
             Console.WriteLine($"Cutted value at row {range.Row}, column {range.Column}");
-            await App.SendMessage(client, App.messageMMI($"Cortei o conteudo da celula {range.Row}, {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Cortei o conteudo da celula {range.Row}, {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
 
@@ -1477,7 +1480,7 @@ namespace Excel2_0
             WriteToCell(range, value);
             await ChangeTextStyle(range, "negrito");
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
-            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo negrito na linha {range.Row}, coluna {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo negrito na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
 
@@ -1507,7 +1510,7 @@ namespace Excel2_0
             WriteToCell(range, value);
             await ChangeTextStyle(range, "itálico");
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
-            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo italico na linha {range.Row}, coluna {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo italico na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
 
@@ -1536,7 +1539,7 @@ namespace Excel2_0
             WriteToCell(range, value);
             await ChangeTextStyle(range, "sublinhado");
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
-            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo sublinhado na linha {range.Row}, coluna {range.Column}"));
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo sublinhado na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
         }
 
@@ -1556,7 +1559,7 @@ namespace Excel2_0
                 Copy(range);
                 Delete(range);
                 Console.WriteLine($"Cut cell at row {range.Row}, column {range.Column}");
-                await App.SendMessage(client, App.messageMMI($"Cortei o valor da celula na linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Cortei o valor da celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 await Task.CompletedTask;
             }
             catch
@@ -1582,7 +1585,7 @@ namespace Excel2_0
                 SelectCell(range);
                 Paste(range);
                 Console.WriteLine($"Pasted cell at row {range.Row}, column {range.Column}");
-                await App.SendMessage(client, App.messageMMI($"Colei o valor da celula na linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Colei o valor da celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 await Task.CompletedTask;
             }
             catch
@@ -1608,7 +1611,7 @@ namespace Excel2_0
                 SelectCell(range);
                 Delete(range);
                 Console.WriteLine($"Deelted cell at row {range.Row}, column {range.Column}");
-                await App.SendMessage(client, App.messageMMI($"Apaguei o valor da celula na linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Apaguei o valor da celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 await Task.CompletedTask;
             }
             catch
@@ -1633,7 +1636,7 @@ namespace Excel2_0
                 ExcelRange range = ParseExcelReference(data["celula"]);
                 SelectCellLock(range);
                 Console.WriteLine($"Selecionada a celula na linha {range.Row}, coluna {range.Column}");
-                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {range.Column}"));
+                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
                 await Task.CompletedTask;
             }
             catch
@@ -1670,7 +1673,7 @@ namespace Excel2_0
                 {
                     ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
                     SelectCell(excelRange);
-                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {FoundCells[0].Item2}"));
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {GetColumnLetter(FoundCells[0].Item2)}"));
                 }
                 else
                 {
@@ -1679,11 +1682,10 @@ namespace Excel2_0
 
                     ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
                     SelectCell(excelRange);
-                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {FoundCells[0].Item2}"));
-
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {GetColumnLetter(FoundCells[0].Item2)}. É esta a celula que tu queres?"));
                     LastIntent = "search";
                     foundCells = FoundCells;
-                    await App.SendMessage(client, App.messageMMI($"É esta a celula que tu queres?"));
+                    //await App.SendMessage(client, App.messageMMI($"E esta a celula que tu queres?"));
                 }
                 await Task.CompletedTask;
             }
@@ -1697,10 +1699,52 @@ namespace Excel2_0
         }
 
         private async Task HandleColSelect(Dictionary<string, string> data)
-        { }
-        
+        {
+            // Get the currently selected cell
+            ExcelRange Cell = GetSelectedCellCoordinates();
+            if (Cell == null)
+            {
+                Console.WriteLine("No cell selected");
+                await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro uma celula"));
+                return;
+            }
+
+            // Get the column of the selected cell
+            int column = Cell.Column;
+
+            // Select the entire column
+            ExcelRange range = ws.Columns[column].Select();
+            previousSelectedCell = range;
+            selectedCell = range;
+
+            Console.WriteLine($"Selected entire column {GetColumnLetter(column)}");
+            await App.SendMessage(client, App.messageMMI($"Selecionada a coluna {GetColumnLetter(column)}"));
+            await Task.CompletedTask;
+        }
+
         private async Task HandleRowSelect(Dictionary<string, string> data)
-        { }
+        {
+            // Get the currently selected cell
+            ExcelRange Cell = GetSelectedCellCoordinates();
+            if (Cell == null)
+            {
+                Console.WriteLine("No cell selected");
+                await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro uma celula"));
+                return;
+            }
+
+            // Get the column of the selected cell
+            int row = Cell.Row;
+
+            // Select the entire column
+            ExcelRange range = ws.Columns[row].Select();
+            previousSelectedCell = range;
+            selectedCell = range;
+
+            Console.WriteLine($"Selected entire row {row}");
+            await App.SendMessage(client, App.messageMMI($"Selecionada a linha {row}"));
+            await Task.CompletedTask;
+        }
 
         private bool ValidateRequiredFields(Dictionary<string, string> data, params string[] requiredFields)
         {
@@ -1767,7 +1811,17 @@ namespace Excel2_0
             }
             return result;
         }
-
+        private string GetColumnLetter(int columnNumber)
+        {
+            string columnName = "";
+            while (columnNumber > 0)
+            {
+                int modulo = (columnNumber - 1) % 26;
+                columnName = Convert.ToChar('A' + modulo) + columnName;
+                columnNumber = (columnNumber - modulo) / 26;
+            }
+            return columnName;
+        }
         private Color ConvertPortugueseColorToColor(string colorName)
         {
             switch (colorName.ToLower())

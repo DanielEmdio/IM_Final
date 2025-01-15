@@ -177,6 +177,12 @@ public class GenFusionSCXML {
     fg.Single(Speech.SELECIONAR_COLUNA, Output.SELECIONAR_COLUNA);
     fg.Single(Speech.SELECIONAR_LINHA, Output.SELECIONAR_LINHA);
 
+    fg.Single(Speech.GREET, Output.GREET);
+    fg.Single(Speech.GOODBYE, Output.GOODBYE);
+    fg.Single(Speech.AFFIRM, Output.AFFIRM);
+    fg.Single(Speech.DENY, Output.DENY);
+
+
     //gesture
     // fg.Single(Gestures.WS_PREVIOUS, Output.WS_PREVIOUS);
     // fg.Single(Gestures.WS_NEXT, Output.WS_NEXT);

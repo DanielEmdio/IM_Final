@@ -46,7 +46,10 @@ public enum Speech implements IModality{
 	SELECIONAR_LINHA("[SPEECH][SELECIONAR_LINHA]",1500),
 	SELECIONAR_COLUNA("[SPEECH][SELECIONAR_COLUNA]",1500),
 
-	//FALTA SIM E NÃO
+	GREET("[SPEECH][GREET]",1500),
+	GOODBYE("[SPEECH][GOODBYE]",1500),
+	AFFIRM("[SPEECH][AFFIRM]",1500),
+	DENY("[SPEECH][DENY]",1500),
 
 	
 	//---------------------------Reduntante--------------------------
