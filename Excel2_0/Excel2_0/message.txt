@@ -1,0 +1,28 @@
+<mmi:mmi xmlns:mmi="http://www.w3.org/2008/04/mmi-arch" mmi:version="1.0">
+  <mmi:startRequest mmi:contextId="ctx-1" mmi:requestId="im-req-id-8" mmi:source="IM" mmi:target="APP">
+    <mmi:contentURL mmi:href="command"/>
+    <mmi:data>
+
+      <emma:emma xmlns:emma="http://www.w3.org/2003/04/emma" emma:version="1.0">
+
+        <emma:group emma:id="fusionGroup-">
+
+          <emma:interpretation emma:id="fusion-" emma:mode="FUSION">
+
+            <command>{"recognized" : ["FUSION","CHANGE_COLOR"]}</command>
+
+          </emma:interpretation>
+
+          <emma:interpretation emma:confidence="1" emma:id="text-" emma:medium="text" emma:mode="command" emma:start="0">
+
+            <command>{"recognized":["SPEECH","CHANGE_COLOR"],"text":"UHJlZW5jaGltZW50byBhenVs","nlu":{"intent":"change_color","entities":[{"entity":"shape","start":0,"end":13,"confidence_entity":0.9969319105148315,"value":"preenchimento","extractor":"DIETClassifier","processors":["EntitySynonymMapper"]},{"entity":"color","start":14,"end":18,"confidence_entity":0.9989996552467346,"value":"azul","extractor":"DIETClassifier","processors":["EntitySynonymMapper"]}]}}</command>
+
+          </emma:interpretation>
+
+        </emma:group>
+
+      </emma:emma>
+
+    </mmi:data>
+  </mmi:startRequest>
+</mmi:mmi>

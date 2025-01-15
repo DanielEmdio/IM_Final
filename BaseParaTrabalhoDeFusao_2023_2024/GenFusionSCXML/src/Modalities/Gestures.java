@@ -11,18 +11,23 @@ import scxmlgen.interfaces.IModality;
 public enum Gestures implements IModality{
 
     // ------------------------Complementary------------------------
-    BOLD("[GESTURES][SCROLLR]", 5000),
+    NEGRITO("[GESTURES][BOLD]", 4000), //por implmentar
+    ITALICO("[GESTURES][ITALIC]",4000), //por implmentar
+    SUBLINHADO("[GESTURES][UNDERLINE]",4000), //por implmentar
 
+    CORTE("[GESTURES][CUT]",4000), 
+    APAGAR("[GESTURES][DELETE]", 4000), 
+    COPIAR("[GESTURES][COPIAR]",4000), //por implmentar
+    COLAR("[GESTURES][PASTE]", 4000), //mal implementado
+
+    LOCKIN("[GESTURES][LOCKIN]", 4000) //por implementar
 
     //----------------------------Single----------------------------
-    WS_PREVIOUS("[GESTURES][PREVIOUSWS]", 5000),
-
-
-    // ----------------Reduntante----------------
-    APAGAR("[GESTURES][CUT]", 5000),
-
-    // COLAR("[GESTURES][PASTE]", 5000),
-
+    // WS_PREVIOUS("[GESTURES][PREVIOUSWS]",5000), 
+    // WS_NEXT("[GESTURES][PREVIOUSWS]",5000),
+    // ZOOMIN("[GESTURES][ZOOMIN]",5000),
+    // ZOOMOUT("[GESTURES][ZOOMOUT]",5000),
+   
 
     ;
     

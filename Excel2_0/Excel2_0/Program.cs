@@ -47,7 +47,7 @@ class Program
             {
                 var result = await App.ProcessMessages(client);
                 Console.WriteLine($"Parsed NLU data: {string.Join(", ", result.Select(kvp => $"{kvp.Key}={kvp.Value}"))}");
-                //await excel.ProcessInstruction(result);
+                await excel.ProcessInstruction(result);
             }
         });
 

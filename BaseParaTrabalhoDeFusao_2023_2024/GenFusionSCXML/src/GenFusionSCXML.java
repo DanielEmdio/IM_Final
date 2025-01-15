@@ -135,27 +135,60 @@ public class GenFusionSCXML {
     */
 
     //---------------------------------------Complementary--------------------------------------------------------
-    // Temos de usar os dois canais
-    // fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COLAR, Output.COLAR_SELECIONAR_CELULA);
-    // fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.APAGAR, Output.APAGAR_SELECIONAR_CELULA);
+    fg.Complementary(Speech.ESCREVER_CONTEUDO, Gestures.NEGRITO, Output.BOLD_ESCREVER_CONTEUDO);
+    fg.Complementary(Speech.ESCREVER_CONTEUDO, Gestures.ITALICO, Output.ITALICO_ESCREVER_CONTEUDO);
+    fg.Complementary(Speech.ESCREVER_CONTEUDO, Gestures.SUBLINHADO, Output.SUBLINHADO_ESCREVER_CONTEUDO); 
 
-    fg.Complementary(Speech.ESCREVER_CONTEUDO, Gestures.BOLD, Output.BOLD_ESCREVER_CONTEUDO);
+    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COPIAR, Output.COPIAR_SELECIONAR_CELULAS);
+    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.CORTE, Output.CORTE_SELECIONAR_CELULAS); //testavel
+    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COLAR, Output.COLAR_SELECIONAR_CELULAS); //testavel
+    // fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.APAGAR, Output.APAGAR_SELECIONAR_CELULAS); //testavel
+
+    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.COPIAR, Output.COPIAR_SELECIONAR_AREA);
+    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.CORTE, Output.CORTE_SELECIONAR_AREA);
+    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.COLAR, Output.COLAR_SELECIONAR_AREA);
+    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.APAGAR, Output.APAGAR_SELECIONAR_AREA);
     
+    fg.Complementary(Speech.FECHAR,Gestures.APAGAR, Output.FECHAR); //testavel
+    fg.Complementary(Speech.APAGAR,Gestures.APAGAR, Output.APAGAR); //testavel
+    fg.Complementary(Speech.SELECIONAR_CELULAS,Gestures.LOCKIN, Output.LOCK_SELECIONAR_CELULAS);
+
 
     //---------------------------------------Single---------------------------------------------------------------
     //speech
-    // fg.Single(Speech.ESCREVER_CONTEUDO, Output.ESCREVER_CONTEUDO_DEFAULT);
+    fg.Single(Speech.SELECIONAR_AREA, Output.SELECIONAR_AREA);
+    fg.Single(Speech.SELECIONAR_CELULAS, Output.SELECIONAR_CELULAS);
+    fg.Single(Speech.ESCREVER_CONTEUDO, Output.ESCREVER_CONTEUDO);
     fg.Single(Speech.ALTERAR_TAMANHO_TEXTO, Output.ALTERAR_TAMANHO_TEXTO);
-    // fg.Single(Speech.SELECIONAR_CELULAS, Output.SELECIONAR_CELULAS);
-    //gesture
-    fg.Single(Gestures.WS_PREVIOUS, Output.WS_PREVIOUS);
+    fg.Single(Speech.DIMINUIR_TAMANHO_TEXTO, Output.DIMINUIR_TAMANHO_TEXTO);
+    fg.Single(Speech.ESTILO_TEXTO, Output.ESTILO_TEXTO);
+    fg.Single(Speech.CHANGE_COLOR, Output.CHANGE_COLOR);
+    fg.Single(Speech.DEFINIR_LIMITES, Output.DEFINIR_LIMITES);
+    fg.Single(Speech.SALVAR, Output.SALVAR);
+    // fg.Single(Speech.FECHAR, Output.FECHAR);
+    fg.Single(Speech.AJUDA, Output.AJUDA);
+    fg.Single(Speech.LIMPAR, Output.LIMPAR);
+    fg.Single(Speech.DIRECIONAR, Output.DIRECIONAR);
+    fg.Single(Speech.ORIENTAR, Output.ORIENTAR);
+    fg.Single(Speech.MATEMATICA, Output.MATEMATICA);
 
+    //novo
+    fg.Single(Speech.PROCURAR, Output.PROCURAR);
+    fg.Single(Speech.SELECIONAR_COLUNA, Output.SELECIONAR_COLUNA);
+    fg.Single(Speech.SELECIONAR_LINHA, Output.SELECIONAR_LINHA);
+
+    //gesture
+    // fg.Single(Gestures.WS_PREVIOUS, Output.WS_PREVIOUS);
+    // fg.Single(Gestures.WS_NEXT, Output.WS_NEXT);
+    // fg.Single(Gestures.ZOOMIN, Output.ZOOMIN);
+    // fg.Single(Gestures.ZOOMOUT, Output.ZOOMOUT);
 
    
     //---------------------------------------Reduntante--------------------------------------------------------
-    // fg.Redundancy(Speech.COLAR, Gestures.COLAR, Output.COLAR);
-    fg.Redundancy(Speech.APAGAR, Gestures.APAGAR, Output.APAGAR);
-
+    fg.Redundancy(Speech.COLAR, Gestures.COLAR, Output.COLAR);
+    // fg.Redundancy(Speech.APAGAR, Gestures.APAGAR, Output.APAGAR);
+    fg.Redundancy(Speech.CORTAR, Gestures.CORTE, Output.CORTAR); //testavel
+    fg.Redundancy(Speech.COPIAR, Gestures.COPIAR, Output.COPIAR);
 
 
     fg.Build("fusion.scxml");

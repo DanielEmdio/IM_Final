@@ -1,0 +1,22 @@
+[
+  {
+    "name": "celula",
+    "pattern": "[A-Za-z]+[0-9]+"
+  },
+  {
+    "name": "estilo",
+    "pattern": "(\\bnegrito\\b|\\bitalico\\b|\\bsublinhado\\b)"
+  },
+  {
+    "name": "direcao",
+    "pattern": "(\\bcima\\b|\\bacima\\b|\\babaixo\\b|\\bbaixo\\b|\\besquerda\\b|\\banterior\\b|\\bdireita\\b|\\bpróximo\\b|\\bseguinte\\b)"
+  },
+  {
+    "name": "formula",
+    "pattern": "(\\bsoma\\b|\\bmédia\\b|\\bmediana\\b|\\bmáximo\\b|\\bminimo\\b)"
+  },
+  {
+    "name": "bordas",
+    "pattern": "(\\binferior\\b|\\bsuperior\\b|\\besquerda\\b|\\bdireita\\b|\\besquerdo\\b|\\bdireito\\b|\\bsem\\b|\\btodos\\b|\\bexteriores\\b)"
+  }
+]

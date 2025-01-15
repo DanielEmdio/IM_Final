@@ -109,6 +109,28 @@ rules:
   - intent: matematica
   - action: utter_matematica
 
+- rule: cortar
+  steps:
+  - intent: cortar
+  - action: utter_cortar
+
+- rule: procurar
+  steps:
+  - intent: procurar
+  - action: utter_procurar
+
+- rule: selecionar_linha
+  steps:
+  - intent: selecionar_linha
+  - action: utter_linha
+
+- rule: selecionar_coluna
+  steps:
+  - intent: selecionar_coluna
+  - action: utter_coluna
+
+
+
 # - rule: Add_reminder to calendar
 #   steps:
 #   - intent: add_reminder

@@ -25,7 +25,9 @@ namespace Excel2_0
         private ExcelRange previousSelectedCell; // Store reference to previously selected cell
         private string LastIntent;
         ClientWebSocket client;
+
         double lastResult;
+        List<(int Row, int Column)> foundCells;
 
         public Xcel(string path, int sheet, ClientWebSocket client)
         {
@@ -35,6 +37,7 @@ namespace Excel2_0
             previousSelectedCell = null;
             LastIntent = null;
             this.client = client;
+            foundCells = new List<(int Row, int Column)>();
 
             try
             {
@@ -59,6 +62,7 @@ namespace Excel2_0
         {
             return new Dictionary<string, Func<Dictionary<string, string>, Task>>
             {
+                //----------------Versão VOZ----------------------
                 ["escrever_conteudo"] = HandleWriteCommand,
                 ["selecionar_celulas"] = HandleSelectCommand,
                 ["alterar_tamanho_texto"] = HandleChangeSizeCommand,
@@ -77,7 +81,41 @@ namespace Excel2_0
                 ["direcionar"] = HandleDirect,
                 ["orientar"] = HandleLocate,
                 ["matematica"] = HandleCalc,
-                ["definir_limites"] = HandleBorders
+                ["definir_limites"] = HandleBorders,
+
+                //----------------------Versão GESTOS-----------------------
+                ["scrollup"] = HandleScrollUp,
+                ["scrolldown"] = HandleScrollDown,
+                ["scrollleft"] = HandleScrollLeft,
+                ["scrollright"] = HandleScrollRight,
+                ["cortar"] = HandleCut,
+                //["nextws"] = HandleNextWS,
+                //["previousws"] = HandlePreviousWS,
+                //["zoomin"] = HandleZoomIn,
+                //["zoomout"] = HandleZoomOut,
+                //Posso tambem por negrito,italico,sublinhado
+
+                //---------------------Versão Fusion--------------------------
+                ["bold_escrever_conteudo"] = HandleBoldWrite,
+                ["italico_escrever_conteudo"] = HandleItalicWrite,
+                ["sublinhado_escrever_conteudo"] = HandleUnderlineWrite,
+
+                //["copiar_selecionar_celulas"] = HandleCopySelectedCell,
+                ["corte_selecionar_celulas"] = HandleCutSelectedCell,
+                ["colar_selecionar_celulas"] = HandlePasteSelectedCell,
+                ["apagar_selecionar_celulas"] = HandleDeleteSelectedCell,
+
+                //["copiar_selecionar_area"] = HandleCopySelectedArea,
+                //["corte_selecionar_area"] = HandleCutSelectedArea,
+                //["colar_selecionar_area"] = HandlePasteSelectedArea,
+                //["apagar_selecionar_area"] = HandleDeleteSelectedArea
+
+                ["lock_selecionar_celulas"] = HandleLockSelectedCell,
+                ["procurar"] = HandleSearch,
+                ["selecionar_coluna"] = HandleColSelect,
+                ["selecionar_linha"] = HandleRowSelect,
+
+
             };
         }
 
@@ -85,99 +123,129 @@ namespace Excel2_0
         {
             if (!nluData.TryGetValue("intent", out string intent))
             {
-                //throw new ArgumentException("No action specified in NLU data");
                 await App.SendMessage(client, App.messageMMI("Nao percebi o que disse pode repetir por favor."));
-                Console.WriteLine(("No action specified in NLU data"));
+                Console.WriteLine("No action specified in NLU data");
+                return;
             }
 
-            // Check for ignore intent
-            if (intent.ToLower() == "ignore")
-            {
-                Console.WriteLine("Ignoring current instruction and waiting for next message...");
-                return; // Skip processing and return immediately
-            }
+            intent = intent.ToLower();
 
-            if (LastIntent == "fechar") //confirmação de algumas assoçôes
-
+            switch (intent)
             {
-                if (intent.ToLower() == "deny") {
-                    Console.WriteLine("Ok, I wont't close the file.");
-                    await App.SendMessage(client, App.messageMMI("Ok, eu nao vou fechar o excel."));
-                    LastIntent = null;
+                case "ignore":
+                    Console.WriteLine("Ignoring current instruction and waiting for next message...");
                     return;
 
-                }else if (intent.ToLower() == "affirm")
-                {
-                    Console.WriteLine("Closing file");
-                    await HandleConfirmClosing();
-                }
-                else
-                {
-                    Console.WriteLine("Sorry I didn't get that, Do you still want to close the file?");
-                    await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, ainda queres fechar o programa?"));
-                    return ;
-                }
-            }
-
-            if (LastIntent == "matematica") //confirmação de algumas assoçôes
-
-            {
-                if (intent.ToLower() == "deny")
-                {
-                    Console.WriteLine("Ok vou descartar o valor calculado.");
-                    await App.SendMessage(client, App.messageMMI("Ok vou descartar o valor calculado"));
-                    LastIntent = null;
-                    lastResult = 0;
+                case "greet":
+                    Console.WriteLine("Hello :)");
+                    await App.SendMessage(client, App.messageMMI("Olá como posso ajudar?"));
                     return;
 
-                }
-                else if (intent.ToLower() == "selecionar_celulas")
-                {
-                    await HandleCelConfirmation(nluData);
-                    LastIntent = null;
-                    lastResult = 0;
+                case "goodbye":
+                    Console.WriteLine("Do you want to close the program?");
+                    LastIntent = "fechar";
+                    await App.SendMessage(client, App.messageMMI("Queres sair do programa? Eu posso encerralo se quiseres"));
                     return;
-                }
-                else
-                {
-                    Console.WriteLine("Sorry I didn't get that, Do you still want to paste the calculated val?");
-                    await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, se queres diz onde queres que coloque, se não, diz que não"));
+
+                case "denny":
+                case "affirm":
+                    if (LastIntent == "fechar")
+                    {
+                        if (intent == "deny")
+                        {
+                            Console.WriteLine("Ok, I wont't close the file.");
+                            await App.SendMessage(client, App.messageMMI("Ok, eu nao vou fechar o excel."));
+                            LastIntent = null;
+                        }
+                        else if (intent == "affirm")
+                        {
+                            Console.WriteLine("Closing file");
+                            await HandleConfirmClosing();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sorry I didn't get that, Do you still want to close the file?");
+                            await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, ainda queres fechar o programa?"));
+                        }
+                        return;
+                    }
+                    else if (LastIntent == "matematica")
+                    {
+                        if (intent == "deny")
+                        {
+                            Console.WriteLine("Ok vou descartar o valor calculado.");
+                            await App.SendMessage(client, App.messageMMI("Ok vou descartar o valor calculado"));
+                            LastIntent = null;
+                            lastResult = 0;
+                        }
+                        else if (intent == "selecionar_celulas")
+                        {
+                            await HandleCelConfirmation(nluData);
+                            LastIntent = null;
+                            lastResult = 0;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sorry I didn't get that, Do you still want to paste the calculated val?");
+                            await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, se queres diz onde queres que coloque, se não, diz que não"));
+                        }
+                        return;
+                    }
+                    else if (LastIntent == "search")
+                    {
+                        if (intent == "deny")
+                        {
+                            if(foundCells.Count > 1) {
+                                foundCells.RemoveAt(0);
+                                ExcelRange excelRange = ws.Cells[foundCells[0].Item1, foundCells[0].Item2];
+                                SelectCell(excelRange);
+                                await App.SendMessage(client, App.messageMMI($"Encontrei na linha {foundCells[0].Item1} coluna {foundCells[0].Item2}"));
+                                await App.SendMessage(client, App.messageMMI($"É esta a celula que tu queres?"));
+
+                            }
+                            else if (foundCells.Count == 1)
+                            {
+                                ExcelRange excelRange = ws.Cells[foundCells[0].Item1, foundCells[0].Item2];
+                                SelectCell(excelRange);
+                                await App.SendMessage(client, App.messageMMI($"Ultimo celula encontrada, linha {foundCells[0].Item1} coluna {foundCells[0].Item2}"));
+                                LastIntent = null;
+                                foundCells.Clear();
+                            }
+                            else
+                            {
+                                await App.SendMessage(client, App.messageMMI("Não encontrei mais nenhuma célula?"));
+                                Console.WriteLine("Error on foundCells");
+                                LastIntent = null;
+                                foundCells.Clear();
+                            }
+                            
+                        }
+                        else if (intent == "affirm")
+                        {
+                            Console.WriteLine($"Ok, ficamos na celula {foundCells[0].Item1}, {foundCells[0].Item2} ");
+                            foundCells.Clear();
+                            LastIntent = null;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sorry I didn't get that, Do you still want to do the search?");
+                            await App.SendMessage(client, App.messageMMI("Desculpa eu nao percebi, é esta a célula que queres?"));
+                        }   
+                    }
+                    Console.WriteLine("Nothing to affirm or denny I think...");
                     return;
-                }
-            }
 
-            if (intent.ToLower() == "greet")
-            {
-                Console.WriteLine("Hello :)");
-                await App.SendMessage(client, App.messageMMI("Olá como posso ajudar?"));
-                return; // Skip processing and return immediately
-            }
-
-            if (intent.ToLower() == "goodbye")
-            {
-                Console.WriteLine("Do you want to close the program?");
-                LastIntent = "fechar";
-                await App.SendMessage(client, App.messageMMI($"Queres sair do programa? Eu posso encerralo se quiseres"));
-                return; // Skip processing and return immediately
-            }
-
-
-            if (intent.ToLower() == "denny" || intent.ToLower() == "affirm")
-            {
-                Console.WriteLine("Nothing to affirm or denny I think...");
-                return; // Skip processing and return immediately
-            }
-
-            if (commandHandlers.TryGetValue(intent.ToLower(), out var handler))
-            {
-                await handler(nluData);
-            }
-            else
-            {
-                // throw new ArgumentException($"Unknown intent: {intent}");
-                Console.WriteLine($"Unknown intent: {intent}");
-                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi o que disseste"));
-                return; // Skip processing and return immediately
+                default:
+                    if (commandHandlers.TryGetValue(intent, out var handler))
+                    {
+                        await handler(nluData);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Unknown intent: {intent}");
+                        await App.SendMessage(client, App.messageMMI("Desculpa nao percebi o que disseste"));
+                    }
+                    return;
             }
         }
 
@@ -245,6 +313,50 @@ namespace Excel2_0
                 } */
 
                 // Store reference to current cell for future cleanup
+                previousSelectedCell = cell;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error selecting cell at row {cell?.Row ?? 0}, column {cell?.Column ?? 0}: {ex.Message}", ex);
+            }
+        }
+
+        public void SelectCellLock(ExcelRange cell)
+        {
+            try
+            {
+                // Null check
+                if (cell == null)
+                {
+                    throw new ArgumentNullException(nameof(cell), "Cell cannot be null");
+                }
+
+                // Clear previous cell's formatting if it exists
+                if (previousSelectedCell != null)
+                {
+                    try
+                    {
+                        // Safe color reset
+                        dynamic prevCell = previousSelectedCell;
+                        if (prevCell.Interior.ColorIndex == 36)
+                        {
+                            prevCell.Interior.ColorIndex = 0; // Reset to no color
+                        }
+                        Marshal.ReleaseComObject(previousSelectedCell);
+                    }
+                    catch (Exception resetEx)
+                    {
+                        Console.WriteLine($"Error resetting previous cell: {resetEx.Message}");
+                    }
+                }
+
+                // Select the cell and make it active
+                dynamic dynamicCell = cell;
+                dynamicCell.Select();
+                
+
+                // Store the selected cell coordinates
+                selectedCell = cell;
                 previousSelectedCell = cell;
             }
             catch (Exception ex)
@@ -667,7 +779,41 @@ namespace Excel2_0
             Marshal.ReleaseComObject(excel);
         }
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public List<(int Row, int Column)> FindAllCellsWithValue(string searchValue)
+        {
+            List<(int Row, int Column)> foundCells = new List<(int Row, int Column)>();
+
+            // Get the used range of the worksheet
+            ExcelRange usedRange = ws.UsedRange;
+
+            // Get the values into a 2D array for faster processing
+            object[,] values = usedRange.Value2;
+
+            // Get the dimensions
+            int rows = usedRange.Rows.Count;
+            int cols = usedRange.Columns.Count;
+
+            // Search through all cells
+            for (int row = 1; row <= rows; row++)
+            {
+                for (int col = 1; col <= cols; col++)
+                {
+                    if (values[row, col]?.ToString()?.Equals(searchValue, StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        // Add the cell position to our results
+                        // Adding the offset if the used range doesn't start at A1
+                        foundCells.Add((
+                            row + usedRange.Row - 1,
+                            col + usedRange.Column - 1
+                        ));
+                    }
+                }
+            }
+
+            return foundCells;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
         private async Task HandleSelectCommand(Dictionary<string, string> data)
         {
             if (!ValidateRequiredFields(data, "celula")) {
@@ -1231,6 +1377,330 @@ namespace Excel2_0
             Close();
             await Task.CompletedTask;
         }
+
+        private async Task HandleScrollUp(Dictionary<string, string> nluData)
+        {
+            // Scroll up by 1 row
+            ws.Application.ActiveWindow.SmallScroll(Up: 1);
+
+            Console.WriteLine("Scrolled up by 1 row");
+            await App.SendMessage(client, App.messageMMI("Scroll para cima"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleScrollDown(Dictionary<string, string> nluData)
+        {
+            // Scroll down by 1 row
+            ws.Application.ActiveWindow.SmallScroll(Down: 1);
+
+            Console.WriteLine("Scrolled down by 1 row");
+            await App.SendMessage(client, App.messageMMI("Scroll para baixo"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleScrollLeft(Dictionary<string, string> nluData)
+        {
+            // Scroll left by 1 column
+            ws.Application.ActiveWindow.SmallScroll(ToLeft: 1);
+
+            Console.WriteLine("Scrolled left by 1 column");
+            await App.SendMessage(client, App.messageMMI("Scroll para a esquerda"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleScrollRight(Dictionary<string, string> nluData)
+        {
+            // Scroll right by 1 column
+            ws.Application.ActiveWindow.SmallScroll(ToRight: 1);
+
+            Console.WriteLine("Scrolled right by 1 column");
+            await App.SendMessage(client, App.messageMMI("Scroll para a direita"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleCut(Dictionary<string, string> data)
+        {
+            ExcelRange range;
+            if (data.ContainsKey("celula"))
+            {
+                try
+                {
+                    range = ParseExcelReference(data["celula"]);
+                }
+                catch
+                {
+                    await App.SendMessage(client, App.messageMMI("Valor de celula invalido, podes repetir por favor"));
+                    Console.WriteLine("Invalid cell");
+                    return;
+                }
+            }
+            else
+            {
+                range = GetSelectedCellCoordinates();
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula que queres copiar"));
+                    return;
+                }
+            }
+            //execution
+            Copy(range);
+            Delete(range);
+            Console.WriteLine($"Cutted value at row {range.Row}, column {range.Column}");
+            await App.SendMessage(client, App.messageMMI($"Cortei o conteudo da celula {range.Row}, {range.Column}"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleBoldWrite(Dictionary<string, string> data)
+        {
+            //validation
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe nao percebi o que queres escrever"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+
+            ExcelRange range = GetSelectedCellCoordinates();
+
+
+            if (!IsCellSelected())
+            {
+                await App.SendMessage(client, App.messageMMI($"Antes de poderes escrever tens de indicar uma celula"));
+                Console.WriteLine($"No cell provided to write on");
+                return;
+            }
+            string value = data["valor"];
+
+
+            //execution
+            WriteToCell(range, value);
+            await ChangeTextStyle(range, "negrito");
+            Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo negrito na linha {range.Row}, coluna {range.Column}"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleItalicWrite(Dictionary<string, string> data)
+        {
+            //validation
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe nao percebi o que queres escrever"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+
+            ExcelRange range = GetSelectedCellCoordinates();
+
+
+            if (!IsCellSelected())
+            {
+                await App.SendMessage(client, App.messageMMI($"Antes de poderes escrever tens de indicar uma celula"));
+                Console.WriteLine($"No cell provided to write on");
+                return;
+            }
+            string value = data["valor"];
+
+
+            //execution
+            WriteToCell(range, value);
+            await ChangeTextStyle(range, "itálico");
+            Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo italico na linha {range.Row}, coluna {range.Column}"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleUnderlineWrite(Dictionary<string, string> data)
+        {
+            //validation
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe nao percebi o que queres escrever"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+
+            ExcelRange range = GetSelectedCellCoordinates();
+
+            if (!IsCellSelected())
+            {
+                await App.SendMessage(client, App.messageMMI($"Antes de poderes escrever tens de indicar uma celula"));
+                Console.WriteLine($"No cell provided to write on");
+                return;
+            }
+            string value = data["valor"];
+
+
+            //execution
+            WriteToCell(range, value);
+            await ChangeTextStyle(range, "sublinhado");
+            Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
+            await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo sublinhado na linha {range.Row}, coluna {range.Column}"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleCutSelectedCell(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "celula"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi para que celula queres mudar"));
+                Console.WriteLine("Missing cell value");
+                return;
+
+            } // Exit and wait for next message
+            try
+            {
+                ExcelRange range = ParseExcelReference(data["celula"]);
+                SelectCell(range);
+                Copy(range);
+                Delete(range);
+                Console.WriteLine($"Cut cell at row {range.Row}, column {range.Column}");
+                await App.SendMessage(client, App.messageMMI($"Cortei o valor da celula na linha {range.Row}, coluna {range.Column}"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Valor de celula invalido, podes repetir por favor"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+        
+        private async Task HandlePasteSelectedCell(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "celula"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi para que celula queres mudar"));
+                Console.WriteLine("Missing cell value");
+                return;
+
+            } // Exit and wait for next message
+            try
+            {
+                ExcelRange range = ParseExcelReference(data["celula"]);
+                SelectCell(range);
+                Paste(range);
+                Console.WriteLine($"Pasted cell at row {range.Row}, column {range.Column}");
+                await App.SendMessage(client, App.messageMMI($"Colei o valor da celula na linha {range.Row}, coluna {range.Column}"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Valor de celula invalido, podes repetir por favor"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+        
+        private async Task HandleDeleteSelectedCell(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "celula"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi para que celula queres mudar"));
+                Console.WriteLine("Missing cell value");
+                return;
+
+            } // Exit and wait for next message
+            try
+            {
+                ExcelRange range = ParseExcelReference(data["celula"]);
+                SelectCell(range);
+                Delete(range);
+                Console.WriteLine($"Deelted cell at row {range.Row}, column {range.Column}");
+                await App.SendMessage(client, App.messageMMI($"Apaguei o valor da celula na linha {range.Row}, coluna {range.Column}"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Valor de celula invalido, podes repetir por favor"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+        
+        private async Task HandleLockSelectedCell(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "celula"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi para que celula queres mudar"));
+                Console.WriteLine("Missing cell value");
+                return;
+
+            } // Exit and wait for next message
+            try
+            {
+                ExcelRange range = ParseExcelReference(data["celula"]);
+                SelectCellLock(range);
+                Console.WriteLine($"Selecionada a celula na linha {range.Row}, coluna {range.Column}");
+                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {range.Column}"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Valor de celula invalido, podes repetir por favor"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+        
+        private async Task HandleSearch(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não percebi que valor quer procurar"));
+                Console.WriteLine("Missing value");
+                return;
+            }
+
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                    return;
+                }
+                List<(int,int)> FoundCells = FindAllCellsWithValue(data["valor"]);
+                if (FoundCells.Count == 0)
+                {
+                    await App.SendMessage(client, App.messageMMI($"Não encontrei {data["valor"]}"));
+                    return;
+                }
+                else if (FoundCells.Count == 1)
+                {
+                    ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
+                    SelectCell(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {FoundCells[0].Item2}"));
+                }
+                else
+                {
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} em {FoundCells.Count} células"));
+                    Console.WriteLine($"Found {FoundCells.Count} cells with value {data["valor"]}");
+
+                    ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
+                    SelectCell(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {FoundCells[0].Item2}"));
+
+                    LastIntent = "search";
+                    foundCells = FoundCells;
+                    await App.SendMessage(client, App.messageMMI($"É esta a celula que tu queres?"));
+                }
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Ocurreu um erro"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+
+        }
+
+        private async Task HandleColSelect(Dictionary<string, string> data)
+        { }
+        
+        private async Task HandleRowSelect(Dictionary<string, string> data)
+        { }
 
         private bool ValidateRequiredFields(Dictionary<string, string> data, params string[] requiredFields)
         {

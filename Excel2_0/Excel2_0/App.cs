@@ -55,75 +55,56 @@ namespace Excel2_0
             //Console.WriteLine($"Sent message: {message}");
         }
 
-        private static Dictionary<string, string> NluExtractor(string message)
+        public static Dictionary<string, string> NluExtractor(string message)
         {
             try
             {
-                //Console.WriteLine("In NluExtractor");
-
-                // Parse the XML to find <command> tag
                 var doc = new XmlDocument();
                 doc.LoadXml(message);
-                //Console.WriteLine($"{doc.OuterXml}");
-                var commandNode = doc.SelectSingleNode("//command");
 
-                if (commandNode == null)
+                // Get all command nodes
+                var commandNodes = doc.SelectNodes("//command");
+                if (commandNodes == null || commandNodes.Count == 0)
                 {
-                    throw new ArgumentException("Command node not found in XML");
+                    throw new ArgumentException("Command nodes not found in XML");
                 }
 
-              
-                // First JSON parse - get the outer JSON object
-                using var outerJson = JsonDocument.Parse(commandNode.InnerText);
+                var result = new Dictionary<string, string>();
 
-                // Get the nlu string property
-                var nluString = outerJson.RootElement.GetProperty("nlu").GetString();
-                if (nluString == null)
+                // Process first command node for FUSION intent
+                var fusionCommand = JsonDocument.Parse(commandNodes[0].InnerText);
+                var recognized = fusionCommand.RootElement.GetProperty("recognized").EnumerateArray();
+                var intentValue = recognized.ElementAtOrDefault(1).GetString();
+                if (intentValue != null)
                 {
-                    throw new ArgumentException("NLU string is null");
+                    result["intent"] = intentValue;
                 }
 
-                // Second JSON parse - parse the nlu string into a JSON object
-                using var nluJson = JsonDocument.Parse(nluString);
-                var nluRoot = nluJson.RootElement;
-
-                // Extract intent
-                var intent = nluRoot.GetProperty("intent").GetProperty("name").GetString();
-              
-
-                // Initialize the result dictionary with the intent
-                var result = new Dictionary<string, string>
-        {
-            { "intent", intent }
-        };
-
-                // Extract entities if they exist
-                if (nluRoot.TryGetProperty("entities", out var entities) && entities.GetArrayLength() > 0)
+                // Process second command node for entities
+                if (commandNodes.Count > 1)
                 {
-                    foreach (var entity in entities.EnumerateArray())
+                    var textCommand = JsonDocument.Parse(commandNodes[1].InnerText);
+                    if (textCommand.RootElement.TryGetProperty("nlu", out var nluElement))
                     {
-                        var entityType = entity.GetProperty("entity").GetString();
-                        var entityValue = entity.GetProperty("value").GetString();
-                        result[entityType] = entityValue;
+                        var entities = nluElement.GetProperty("entities");
+                        foreach (var entity in entities.EnumerateArray())
+                        {
+                            var entityType = entity.GetProperty("entity").GetString();
+                            var entityValue = entity.GetProperty("value").GetString();
+                            if (entityType != null && entityValue != null)
+                            {
+                                result[entityType] = entityValue;
+                            }
+                        }
                     }
-                }
-
-                foreach (var kvp in result)
-                {
-                    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
                 }
 
                 return result;
             }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON parsing error: {ex.Message}");
-                throw new ArgumentException($"Failed to parse JSON data: {ex.Message}", ex);
-            }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR on NluExtractor: {ex.Message}");
-                throw new ArgumentException($"Failed to parse NLU data: {ex.Message}", ex);
+                Console.WriteLine($"Error in NluExtractor: {ex.Message}");
+                throw;
             }
         }
 
@@ -159,8 +140,8 @@ namespace Excel2_0
                 }
                 else if (message != null && message != "RENEW")
                 {
-                    Console.WriteLine("Received new message");
-                    Console.WriteLine(message);
+                    //Console.WriteLine("Received new message");
+                    //Console.WriteLine(message);
                    
                     try
                     {

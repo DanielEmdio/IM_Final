@@ -438,6 +438,80 @@ nlu:
     - Calcule a [mediana](formula) até a célula [H8](celula)
     - [media](formula) até a célula [I9](celula)
     - Encontre a [mediana](formula) até a célula [J1](celula)
+
+- intent: cortar
+  examples: |
+   - cortar
+   - corta
+   - controle x 
+   - corta a celula [a1](celula)
+   - corta [r7](celula)
+   - cortar [u4](celula) 
+   - cortar celula [de14](celula)
+   - controle x na [g56](celula)
+   - cortar em [t5](celula)
+
+- intent: procurar
+  examples: |
+   - procura por [Daniel](valor)
+   - vai para onde esta escrito [Vieira](valor)
+   - encontra o texto [relatório](valor)
+   - localiza a palavra [vendas](valor)
+   - busca o termo [despesas](valor)
+   - procura pela expressão [total mensal](valor)
+   - pesquisa onde tem [Lisboa](valor)
+   - encontra a célula com [2024](valor)
+   - localiza onde aparece [Portugal](valor)
+   - busca por [cliente](valor)
+   - procura o valor [500](valor)
+   - pesquisa pela data [janeiro](valor)
+   - encontra onde está [recurso](valor)
+   - localiza o nome [Ana](valor)
+   - procura pela referência [ABC123](valor)
+   - busca onde consta [departamento](valor)
+   - pesquisa o código [XYZ](valor)
+   - encontra a sigla [PT](valor)
+   - procura pela categoria [produtos](valor)
+   - localiza o número [12345](valor)
+   - busca pelo email [info](valor)
+   - pesquisa o contacto [912](valor)
+   - encontra o documento [fatura](valor)
+   - procura pelo projeto [alpha](valor)
+   - localiza [norte](valor)
+   - pesquisa pelo funcionário [Pedro](valor)
+   - busca pela referência [INV](valor)
+   - procura o status [pendente](valor)
+   - localiza o termo [urgente](valor)
+   - encontra o grupo [equipa](valor)
+
+- intent: selecionar_linha
+  examples: |
+   - selecionar linha
+   - marcar linha
+   - seleciona toda a linha atual
+   - quero selecionar esta linha inteira
+   - marca a linha completa
+   - seleciona a linha toda
+   - destaca esta linha
+   - seleciona a linha de trabalho atual
+   - quero marcar a linha inteira
+   - escolhe a linha toda
+   - seleciona do início ao fim da linha
+
+
+- intent: selecionar_coluna
+  examples: |
+   - selecionar coluna
+   - marcar coluna
+   - seleciona toda a coluna atual
+   - quero selecionar esta coluna inteira
+   - marca a coluna completa
+   - seleciona a coluna toda
+   - destaca esta coluna
+   - seleciona a coluna de trabalho atual
+   - quero marcar a coluna inteira
+   - escolhe a coluna toda
+   - seleciona do topo ao fim da coluna
     
 
 - regex: celula
