@@ -107,19 +107,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\danie\\.nuget\\packages\\": {}
+    "C:\\Users\\Legion\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\danie\\Disciplinas\\MEI\\1Ano\\1semestre\\IM\\Projeto\\IM_Final\\Excel2_0\\Excel2_0\\Excel2_0.csproj",
+      "projectUniqueName": "C:\\Users\\Legion\\OneDrive\\Universidade\\Mestrado\\1Ano\\1Semestre\\IM\\IM_Final\\Excel2_0\\Excel2_0\\Excel2_0.csproj",
       "projectName": "Excel2_0",
-      "projectPath": "C:\\Users\\danie\\Disciplinas\\MEI\\1Ano\\1semestre\\IM\\Projeto\\IM_Final\\Excel2_0\\Excel2_0\\Excel2_0.csproj",
-      "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\danie\\Disciplinas\\MEI\\1Ano\\1semestre\\IM\\Projeto\\IM_Final\\Excel2_0\\Excel2_0\\obj\\",
+      "projectPath": "C:\\Users\\Legion\\OneDrive\\Universidade\\Mestrado\\1Ano\\1Semestre\\IM\\IM_Final\\Excel2_0\\Excel2_0\\Excel2_0.csproj",
+      "packagesPath": "C:\\Users\\Legion\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Legion\\OneDrive\\Universidade\\Mestrado\\1Ano\\1Semestre\\IM\\IM_Final\\Excel2_0\\Excel2_0\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Legion\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -175,7 +175,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.205/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -16,18 +16,30 @@ namespace Excel2_0
     class Xcel
 
     {
-
         private class CellContent
         {
             public object Value { get; set; }
-            public Font Font { get; set; }
-            public Interior Interior { get; set; }
-            public Borders Borders { get; set; }
+            public double FontSize { get; set; }
+            public string FontName { get; set; }
+            public bool FontBold { get; set; }
+            public bool FontItalic { get; set; }
+            public XlUnderlineStyle FontUnderline { get; set; }
+            public dynamic FontColor { get; set; }
+            public dynamic InteriorColor { get; set; }
+            public XlPattern InteriorPattern { get; set; }
+            public Dictionary<XlBordersIndex, BorderStyle> Borders { get; set; }
             public XlHAlign HorizontalAlignment { get; set; }
             public XlVAlign VerticalAlignment { get; set; }
             public bool WrapText { get; set; }
             public int Orientation { get; set; }
             public string NumberFormat { get; set; }
+        }
+
+        private class BorderStyle
+        {
+            public XlLineStyle LineStyle { get; set; }
+            public XlBorderWeight Weight { get; set; }
+            public dynamic Color { get; set; }
         }
 
         string path = "";
@@ -531,14 +543,32 @@ namespace Excel2_0
             // cell.Copy();
             try 
             {
+                var borders = new Dictionary<XlBordersIndex, BorderStyle>();
+                foreach (XlBordersIndex borderIndex in Enum.GetValues(typeof(XlBordersIndex)))
+                {
+                    var border = cell.Borders[borderIndex];
+                    borders[borderIndex] = new BorderStyle
+                    {
+                        LineStyle = (XlLineStyle)border.LineStyle,
+                        Weight = (XlBorderWeight)border.Weight,
+                        Color = border.Color
+                    };
+                }
+
                 clipboardContent = new CellContent
                 {
                     Value = cell.Value2,
-                    Font = cell.Font,
-                    Interior = cell.Interior,
-                    Borders = cell.Borders,
-                    HorizontalAlignment = cell.HorizontalAlignment,
-                    VerticalAlignment = cell.VerticalAlignment,
+                    FontSize = cell.Font.Size,
+                    FontName = cell.Font.Name,
+                    FontBold = cell.Font.Bold,
+                    FontItalic = cell.Font.Italic,
+                    FontUnderline = (XlUnderlineStyle)cell.Font.Underline,
+                    FontColor = cell.Font.Color,
+                    InteriorColor = cell.Interior.Color,
+                    InteriorPattern = (XlPattern)cell.Interior.Pattern,
+                    Borders = borders,
+                    HorizontalAlignment = (XlHAlign)cell.HorizontalAlignment,
+                    VerticalAlignment = (XlVAlign)cell.VerticalAlignment,
                     WrapText = cell.WrapText,
                     Orientation = cell.Orientation,
                     NumberFormat = cell.NumberFormat
@@ -585,7 +615,6 @@ namespace Excel2_0
 
         public void Paste(ExcelRange cell)
         {
-            // cell.PasteSpecial();
             if (clipboardContent == null)
             {
                 Console.WriteLine("Nothing to paste - clipboard is empty");
@@ -598,23 +627,34 @@ namespace Excel2_0
                 cell.Value2 = clipboardContent.Value;
 
                 // Copy font properties
-                cell.Font.Name = clipboardContent.Font.Name;
-                cell.Font.Size = clipboardContent.Font.Size;
-                cell.Font.Bold = clipboardContent.Font.Bold;
-                cell.Font.Italic = clipboardContent.Font.Italic;
-                cell.Font.Underline = clipboardContent.Font.Underline;
-                cell.Font.Color = clipboardContent.Font.Color;
+                cell.Font.Name = clipboardContent.FontName;
+                cell.Font.Size = clipboardContent.FontSize;
+                cell.Font.Bold = clipboardContent.FontBold;
+                cell.Font.Italic = clipboardContent.FontItalic;
+                cell.Font.Underline = clipboardContent.FontUnderline;
+                cell.Font.Color = clipboardContent.FontColor;
 
                 // Copy interior (background)
-                cell.Interior.Color = clipboardContent.Interior.Color;
-                cell.Interior.Pattern = clipboardContent.Interior.Pattern;
+                cell.Interior.Color = clipboardContent.InteriorColor;
+                cell.Interior.Pattern = clipboardContent.InteriorPattern;
 
-                // Copy borders
-                foreach (XlBordersIndex border in Enum.GetValues(typeof(XlBordersIndex)))
+                // Copy borders - only if they were actually set in the original
+                foreach (var borderPair in clipboardContent.Borders)
                 {
-                    cell.Borders[border].LineStyle = clipboardContent.Borders[border].LineStyle;
-                    cell.Borders[border].Weight = clipboardContent.Borders[border].Weight;
-                    cell.Borders[border].Color = clipboardContent.Borders[border].Color;
+                    var border = cell.Borders[borderPair.Key];
+                    var style = borderPair.Value;
+                    
+                    // Only apply border if it was actually set in the original
+                    if (style.LineStyle != XlLineStyle.xlLineStyleNone)
+                    {
+                        border.LineStyle = style.LineStyle;
+                        border.Weight = style.Weight;
+                        border.Color = style.Color;
+                    }
+                    else
+                    {
+                        border.LineStyle = XlLineStyle.xlLineStyleNone;
+                    }
                 }
 
                 // Copy alignment and formatting
@@ -1766,11 +1806,11 @@ namespace Excel2_0
 
             try
             {
-                if (!IsCellSelected())
-                {
-                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
-                    return;
-                }
+                // if (!IsCellSelected())
+                // {
+                //     await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                //     return;
+                // }
                 List<(int,int)> FoundCells = FindAllCellsWithValue(data["valor"]);
                 if (FoundCells.Count == 0)
                 {
@@ -1862,8 +1902,8 @@ namespace Excel2_0
                 await App.SendMessage(client, App.messageMMI("Desculpa nao percebi as dimensãoes da area que queres criar"));
                 Console.WriteLine("Missing factor value");
                 return;
-
             }
+            
             try
             {
                 if (!IsCellSelected())
@@ -1875,19 +1915,35 @@ namespace Excel2_0
                 int xFactor = ParseInt(data["xfactor"]);
                 int yFactor = ParseInt(data["yfactor"]);
 
-                ExcelRange startCell = GetSelectedCellCoordinates();
-                ExcelRange endCell = ws.Range[startCell.Row + xFactor, startCell.Column + yFactor];
-                ExcelRange range = ws.Range[startCell, endCell];
+                // Get the currently selected cell's coordinates
+                int startRow = selectedCell.Row;
+                int startCol = selectedCell.Column;
+                
+                // Calculate end cell coordinates
+                int endRow = startRow + (xFactor - 1);
+                int endCol = startCol + (yFactor - 1);
 
+                // Validate coordinates
+                if (endRow > ws.Rows.Count || endCol > ws.Columns.Count || endRow < 1 || endCol < 1)
+                {
+                    await App.SendMessage(client, App.messageMMI("Valor de dimensão invalidos, podes repetir por favor"));
+                    Console.WriteLine("Invalid cell range");
+                    return;
+                }
+
+                // Create the range directly using the worksheet's Range property
+                ExcelRange range = (ExcelRange)ws.Range[ws.Cells[startRow, startCol], ws.Cells[endRow, endCol]];
+                
+                // Select the range
                 SelectCell(range);
-                Console.WriteLine($"Selected cell range from ({startCell.Row}, {startCell.Column}) to ({endCell.Row}, {endCell.Column})");
-                await App.SendMessage(client, App.messageMMI($"Area selecionada da linha {startCell.Row}, coluna {GetColumnLetter(startCell.Column)} ate a linha {endCell.Row}, coluna {GetColumnLetter(endCell.Column)}"));
-                await Task.CompletedTask;
+                
+                Console.WriteLine($"Selected cell range from ({startRow}, {startCol}) to ({endRow}, {endCol})");
+                await App.SendMessage(client, App.messageMMI($"Area selecionada da linha {startRow}, coluna {GetColumnLetter(startCol)} ate a linha {endRow}, coluna {GetColumnLetter(endCol)}"));
             }
-            catch
+            catch (Exception e)
             {
                 await App.SendMessage(client, App.messageMMI("Valor de dimensão invalidos, podes repetir por favor"));
-                Console.WriteLine("Invalid cell");
+                Console.WriteLine($"Error in HandleSelectX: {e.Message}");
                 return;
             }
         }
@@ -1903,11 +1959,11 @@ namespace Excel2_0
 
             try
             {
-                if (!IsCellSelected())
-                {
-                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
-                    return;
-                }
+                // if (!IsCellSelected())
+                // {
+                //     await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                //     return;
+                // }
                 List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
                 if (FoundCells.Count == 0)
                 {
@@ -1942,11 +1998,11 @@ namespace Excel2_0
 
             try
             {
-                if (!IsCellSelected())
-                {
-                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
-                    return;
-                }
+                // if (!IsCellSelected())
+                // {
+                //     await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                //     return;
+                // }
                 List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
                 if (FoundCells.Count == 0)
                 {
@@ -1981,11 +2037,11 @@ namespace Excel2_0
 
             try
             {
-                if (!IsCellSelected())
-                {
-                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
-                    return;
-                }
+                // if (!IsCellSelected())
+                // {
+                //     await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                //     return;
+                // }
                 List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
                 if (FoundCells.Count == 0)
                 {
@@ -2020,11 +2076,11 @@ namespace Excel2_0
 
             try
             {
-                if (!IsCellSelected())
-                {
-                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
-                    return;
-                }
+                // if (!IsCellSelected())
+                // {
+                //     await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                //     return;
+                // }
                 List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
                 if (FoundCells.Count == 0)
                 {
@@ -2059,11 +2115,11 @@ namespace Excel2_0
 
             try
             {
-                if (!IsCellSelected())
-                {
-                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
-                    return;
-                }
+                // if (!IsCellSelected())
+                // {
+                //     await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                //     return;
+                // }
                 List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
                 if (FoundCells.Count == 0)
                 {
