@@ -16,6 +16,20 @@ namespace Excel2_0
     class Xcel
 
     {
+
+        private class CellContent
+        {
+            public object Value { get; set; }
+            public Font Font { get; set; }
+            public Interior Interior { get; set; }
+            public Borders Borders { get; set; }
+            public XlHAlign HorizontalAlignment { get; set; }
+            public XlVAlign VerticalAlignment { get; set; }
+            public bool WrapText { get; set; }
+            public int Orientation { get; set; }
+            public string NumberFormat { get; set; }
+        }
+
         string path = "";
         _Application excel = new _Excel.Application();
         readonly Dictionary<string, Func<Dictionary<string, string>, Task>> commandHandlers;
@@ -25,6 +39,7 @@ namespace Excel2_0
         private ExcelRange previousSelectedCell; // Store reference to previously selected cell
         private string LastIntent;
         ClientWebSocket client;
+        private CellContent clipboardContent;
 
         double lastResult;
         List<(int Row, int Column)> foundCells;
@@ -99,22 +114,21 @@ namespace Excel2_0
                 ["bold_escrever_conteudo"] = HandleBoldWrite,
                 ["italico_escrever_conteudo"] = HandleItalicWrite,
                 ["sublinhado_escrever_conteudo"] = HandleUnderlineWrite,
-
                 //["copiar_selecionar_celulas"] = HandleCopySelectedCell,
                 ["corte_selecionar_celulas"] = HandleCutSelectedCell,
                 ["colar_selecionar_celulas"] = HandlePasteSelectedCell,
-                ["apagar_selecionar_celulas"] = HandleDeleteSelectedCell,
+                ["procurar"] = HandleSearch,
+                ["selecionar_coluna"] = HandleAllColSelect,
+                ["selecionar_linha"] = HandleAllRowSelect,
 
-                //["copiar_selecionar_area"] = HandleCopySelectedArea,
-                //["corte_selecionar_area"] = HandleCutSelectedArea,
-                //["colar_selecionar_area"] = HandlePasteSelectedArea,
-                //["apagar_selecionar_area"] = HandleDeleteSelectedArea
+                ["selecionar_x_area"] = HandleSelectX,
+                ["procurar_coluna"] = HandleSelectCol,
+                ["procurar_linha"] = HandleSelectRow,
 
                 ["lock_selecionar_celulas"] = HandleLockSelectedCell,
-                ["procurar"] = HandleSearch,
-                ["selecionar_coluna"] = HandleColSelect,
-                ["selecionar_linha"] = HandleRowSelect,
-
+                ["lock_procurar_coluna"] = HandleLockSelectCol,
+                ["lock_procurar_linha"] = HandleLockSelectRow,
+                ["lock_procurar"] = HandleLockSearch,
 
             };
         }
@@ -173,13 +187,15 @@ namespace Excel2_0
                         }
                         return;
                     case "search":
+                    case "search_lock":
                         if (intent == "deny")
                         {
                             if (foundCells.Count > 1)
                             {
                                 foundCells.RemoveAt(0);
                                 ExcelRange excelRange = ws.Cells[foundCells[0].Item1, foundCells[0].Item2];
-                                SelectCell(excelRange);
+                                if(LastIntent == "search") {SelectCell(excelRange);}
+                                else { SelectCellLock(excelRange); }
                                 await App.SendMessage(client, App.messageMMI($"Encontrei na linha {foundCells[0].Item1} coluna {GetColumnLetter(foundCells[0].Item2)}"));
                                 await App.SendMessage(client, App.messageMMI($"É esta a celula que tu queres?"));
 
@@ -187,7 +203,8 @@ namespace Excel2_0
                             else if (foundCells.Count == 1)
                             {
                                 ExcelRange excelRange = ws.Cells[foundCells[0].Item1, foundCells[0].Item2];
-                                SelectCell(excelRange);
+                                if (LastIntent == "search") { SelectCell(excelRange); }
+                                else { SelectCellLock(excelRange); }
                                 await App.SendMessage(client, App.messageMMI($"Ultimo celula encontrada, linha {foundCells[0].Item1} coluna {GetColumnLetter(foundCells[0].Item2)}"));
                                 LastIntent = null;
                                 foundCells.Clear();
@@ -511,22 +528,109 @@ namespace Excel2_0
         }
 
         public void Copy(ExcelRange cell) {
-            cell.Copy();
+            // cell.Copy();
+            try 
+            {
+                clipboardContent = new CellContent
+                {
+                    Value = cell.Value2,
+                    Font = cell.Font,
+                    Interior = cell.Interior,
+                    Borders = cell.Borders,
+                    HorizontalAlignment = cell.HorizontalAlignment,
+                    VerticalAlignment = cell.VerticalAlignment,
+                    WrapText = cell.WrapText,
+                    Orientation = cell.Orientation,
+                    NumberFormat = cell.NumberFormat
+                };
+                Console.WriteLine("Content copied to clipboard");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error copying cell content: {ex.Message}");
+                throw;
+            }
         }
 
         public void Cut(ExcelRange cell)
         {
-            cell.Cut();
+            // cell.Cut();
+            try 
+            {
+                Copy(cell); // Store content
+                Delete(cell); // Clear the source cell
+                Console.WriteLine("Content cut to clipboard");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cutting cell content: {ex.Message}");
+                throw;
+            }
         }
 
         public void Delete(ExcelRange cell)
         {
-            cell.Value2 = "";
+            // cell.Value2 = "";
+            try 
+            {
+                cell.ClearContents();
+                ClearStyle(cell);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting cell content: {ex.Message}");
+                throw;
+            }
         }
 
         public void Paste(ExcelRange cell)
         {
-            cell.PasteSpecial();
+            // cell.PasteSpecial();
+            if (clipboardContent == null)
+            {
+                Console.WriteLine("Nothing to paste - clipboard is empty");
+                return;
+            }
+
+            try 
+            {
+                // Copy value
+                cell.Value2 = clipboardContent.Value;
+
+                // Copy font properties
+                cell.Font.Name = clipboardContent.Font.Name;
+                cell.Font.Size = clipboardContent.Font.Size;
+                cell.Font.Bold = clipboardContent.Font.Bold;
+                cell.Font.Italic = clipboardContent.Font.Italic;
+                cell.Font.Underline = clipboardContent.Font.Underline;
+                cell.Font.Color = clipboardContent.Font.Color;
+
+                // Copy interior (background)
+                cell.Interior.Color = clipboardContent.Interior.Color;
+                cell.Interior.Pattern = clipboardContent.Interior.Pattern;
+
+                // Copy borders
+                foreach (XlBordersIndex border in Enum.GetValues(typeof(XlBordersIndex)))
+                {
+                    cell.Borders[border].LineStyle = clipboardContent.Borders[border].LineStyle;
+                    cell.Borders[border].Weight = clipboardContent.Borders[border].Weight;
+                    cell.Borders[border].Color = clipboardContent.Borders[border].Color;
+                }
+
+                // Copy alignment and formatting
+                cell.HorizontalAlignment = clipboardContent.HorizontalAlignment;
+                cell.VerticalAlignment = clipboardContent.VerticalAlignment;
+                cell.WrapText = clipboardContent.WrapText;
+                cell.Orientation = clipboardContent.Orientation;
+                cell.NumberFormat = clipboardContent.NumberFormat;
+
+                Console.WriteLine("Content pasted from clipboard");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error pasting cell content: {ex.Message}");
+                throw;
+            }
         }
 
         public void ClearStyle(ExcelRange cell)
@@ -1640,7 +1744,7 @@ namespace Excel2_0
                 ExcelRange range = ParseExcelReference(data["celula"]);
                 SelectCellLock(range);
                 Console.WriteLine($"Selecionada a celula na linha {range.Row}, coluna {range.Column}");
-                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
+                await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}, visão estática"));
                 await Task.CompletedTask;
             }
             catch
@@ -1702,7 +1806,7 @@ namespace Excel2_0
 
         }
 
-        private async Task HandleColSelect(Dictionary<string, string> data)
+        private async Task HandleAllColSelect(Dictionary<string, string> data)
         {
             // Get the currently selected cell
             ExcelRange Cell = GetSelectedCellCoordinates();
@@ -1726,7 +1830,7 @@ namespace Excel2_0
             await Task.CompletedTask;
         }
 
-        private async Task HandleRowSelect(Dictionary<string, string> data)
+        private async Task HandleAllRowSelect(Dictionary<string, string> data)
         {
             // Get the currently selected cell
             ExcelRange Cell = GetSelectedCellCoordinates();
@@ -1749,6 +1853,249 @@ namespace Excel2_0
             Console.WriteLine($"Selected entire row {row}");
             await App.SendMessage(client, App.messageMMI($"Selecionada a linha {row}"));
             await Task.CompletedTask;
+        }
+
+        private async Task HandleSelectX(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "xfactor") || !ValidateRequiredFields(data, "yfactor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi as dimensãoes da area que queres criar"));
+                Console.WriteLine("Missing factor value");
+                return;
+
+            }
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde a area vai comecar"));
+                    return;
+                }
+
+                int xFactor = ParseInt(data["xfactor"]);
+                int yFactor = ParseInt(data["yfactor"]);
+
+                ExcelRange startCell = GetSelectedCellCoordinates();
+                ExcelRange endCell = ws.Range[startCell.Row + xFactor, startCell.Column + yFactor];
+                ExcelRange range = ws.Range[startCell, endCell];
+
+                SelectCell(range);
+                Console.WriteLine($"Selected cell range from ({startCell.Row}, {startCell.Column}) to ({endCell.Row}, {endCell.Column})");
+                await App.SendMessage(client, App.messageMMI($"Area selecionada da linha {startCell.Row}, coluna {GetColumnLetter(startCell.Column)} ate a linha {endCell.Row}, coluna {GetColumnLetter(endCell.Column)}"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Valor de dimensão invalidos, podes repetir por favor"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+
+        private async Task HandleSelectCol(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não percebi que valor de coluna quer procurar"));
+                Console.WriteLine("Missing value");
+                return;
+            }
+
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                    return;
+                }
+                List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
+                if (FoundCells.Count == 0)
+                {
+                    await App.SendMessage(client, App.messageMMI($"Não encontrei {data["valor"]}"));
+                    return;
+                }
+                else
+                {
+                    ExcelRange CurrentCell = GetSelectedCellCoordinates();
+                    ExcelRange excelRange = ws.Cells[CurrentCell.Row, FoundCells[0].Item2];
+                    SelectCell(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {excelRange.Row}, coluna {GetColumnLetter(excelRange.Column)}"));
+                }
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Ocurreu um erro"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+
+        private async Task HandleSelectRow(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não percebi que valor de coluna quer procurar"));
+                Console.WriteLine("Missing value");
+                return;
+            }
+
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                    return;
+                }
+                List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
+                if (FoundCells.Count == 0)
+                {
+                    await App.SendMessage(client, App.messageMMI($"Não encontrei {data["valor"]}"));
+                    return;
+                }
+                else
+                {
+                    ExcelRange CurrentCell = GetSelectedCellCoordinates();
+                    ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, CurrentCell.Column];
+                    SelectCell(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {excelRange.Row}, coluna {GetColumnLetter(excelRange.Column)}"));
+                }
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Ocurreu um erro"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+
+        private async Task HandleLockSelectCol(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não percebi que valor de coluna quer procurar"));
+                Console.WriteLine("Missing value");
+                return;
+            }
+
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                    return;
+                }
+                List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
+                if (FoundCells.Count == 0)
+                {
+                    await App.SendMessage(client, App.messageMMI($"Não encontrei {data["valor"]}"));
+                    return;
+                }
+                else
+                {
+                    ExcelRange CurrentCell = GetSelectedCellCoordinates();
+                    ExcelRange excelRange = ws.Cells[CurrentCell.Row, FoundCells[0].Item2];
+                    SelectCellLock(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {excelRange.Row}, coluna {GetColumnLetter(excelRange.Column)}"));
+                }
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Ocurreu um erro"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+
+        private async Task HandleLockSelectRow(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não percebi que valor de coluna quer procurar"));
+                Console.WriteLine("Missing value");
+                return;
+            }
+
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                    return;
+                }
+                List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
+                if (FoundCells.Count == 0)
+                {
+                    await App.SendMessage(client, App.messageMMI($"Não encontrei {data["valor"]}"));
+                    return;
+                }
+                else
+                {
+                    ExcelRange CurrentCell = GetSelectedCellCoordinates();
+                    ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, CurrentCell.Column];
+                    SelectCellLock(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Selecionada a celula na linha {excelRange.Row}, coluna {GetColumnLetter(excelRange.Column)}"));
+                }
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Ocurreu um erro"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+
+        private async Task HandleLockSearch(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "valor"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não percebi que valor quer procurar"));
+                Console.WriteLine("Missing value");
+                return;
+            }
+
+            try
+            {
+                if (!IsCellSelected())
+                {
+                    await App.SendMessage(client, App.messageMMI("Por favor escolha primeiro a celula onde vai comecar"));
+                    return;
+                }
+                List<(int, int)> FoundCells = FindAllCellsWithValue(data["valor"]);
+                if (FoundCells.Count == 0)
+                {
+                    await App.SendMessage(client, App.messageMMI($"Não encontrei {data["valor"]}"));
+                    return;
+                }
+                else if (FoundCells.Count == 1)
+                {
+                    ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
+                    SelectCellLock(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {GetColumnLetter(FoundCells[0].Item2)}"));
+                }
+                else
+                {
+                    // await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} em {FoundCells.Count} células"));
+                    Console.WriteLine($"Found {FoundCells.Count} cells with value {data["valor"]}");
+
+                    ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
+                    SelectCellLock(excelRange);
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} em {FoundCells.Count} células, na linha {FoundCells[0].Item1} coluna {GetColumnLetter(FoundCells[0].Item2)}. É esta a celula que tu queres?"));
+                    LastIntent = "searchlock";
+                    foundCells = FoundCells;
+                    //await App.SendMessage(client, App.messageMMI($"E esta a celula que tu queres?"));
+                }
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Ocurreu um erro"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
         }
 
         private bool ValidateRequiredFields(Dictionary<string, string> data, params string[] requiredFields)

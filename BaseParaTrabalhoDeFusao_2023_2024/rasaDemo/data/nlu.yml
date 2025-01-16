@@ -86,6 +86,8 @@ nlu:
     - Quero destacar até [w4](celula)
     - Define o alcance até [x9](celula)
     - Marca até [z6](celula)
+    
+
 
 - intent: selecionar_celulas
   examples: | 
@@ -512,11 +514,73 @@ nlu:
    - quero marcar a coluna inteira
    - escolhe a coluna toda
    - seleciona do topo ao fim da coluna
+
+- intent: selecionar_x_area
+  examples: |
+    - Marca [10](xfactor) por [10](yfactor)
+    - Região[1](xfactor) por [9](yfactor)
+    - Seleciona matriz [5](xfactor) por [5](yfactor)
+    - Cria quadrado [3](xfactor) por [7](yfactor)
+    - Matriz [8](xfactor) por [4](yfactor)
+    - Quero dimensão [2](xfactor) x [6](yfactor)
+    - Dimensão [4](xfactor) x [8](yfactor)
+    - Tamanho [7](xfactor) x [3](yfactor)
+    - Define dimensões [6](xfactor) por [2](yfactor)
+    - Tamanho da matriz [9](xfactor) x [5](yfactor)
+    - Cria grade [12](xfactor) por [6](yfactor)
+    - Grade de [15](xfactor) x [8](yfactor)
+    - Define matriz [10](xfactor) x [10](yfactor)
+    - Quero uma matriz [1](xfactor) x [9](yfactor)
+    - Cria uma grade [3](xfactor) x [3](yfactor)
+    - Dimensões [8](xfactor) por [8](yfactor)
     
+- intent: procurar_coluna
+  examples: |
+    - coluna [final](valor)
+    - vai para a coluna [voz](valor)
+    - encontra a coluna [total](valor)
+    - procura a coluna [vendas](valor)
+    - busca a coluna [produtos](valor)
+    - localiza a coluna [despesas](valor)
+    - acha a coluna [receitas](valor)
+    - pesquisa a coluna [data](valor)
+    - procura coluna [cliente](valor)
+    - encontra coluna [preço](valor)
+    - busca coluna [quantidade](valor)
+    - onde está a coluna [stock](valor)
+    - preciso da coluna [telefone](valor)
+    - mostra a coluna [email](valor)
+    - desloca até a coluna [gestos](valor)
+
+- intent: procurar_linha
+  examples: |
+    - linha [David](valor)
+    - vai para a linha [Guerra](valor)
+    - encontra a linha [Janeiro](valor)
+    - procura a linha [2024](valor)
+    - busca a linha [vendedor](valor)
+    - localiza a linha [total](valor)
+    - acha a linha [resumo](valor)
+    - pesquisa a linha [Lisboa](valor)
+    - procura linha [cliente](valor)
+    - encontra linha [faturação](valor)
+    - busca linha [despesa](valor)
+    - onde está a linha [balanço](valor)
+    - preciso da linha [produto](valor)
+    - mostra a linha [resultado](valor)
+    - desloca até a linha [total](valor)
 
 - regex: celula
   examples: |
     - [A-Za-z]+[0-9]+
+
+- regex: xfactor
+  examples: |
+    - [0-9]+
+
+- regex: yfactor
+  examples: |
+    - [0-9]+
 
 
 - lookup: estilo

@@ -142,16 +142,14 @@ public class GenFusionSCXML {
     fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COPIAR, Output.COPIAR_SELECIONAR_CELULAS);
     fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.CORTE, Output.CORTE_SELECIONAR_CELULAS); //testavel
     fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COLAR, Output.COLAR_SELECIONAR_CELULAS); //testavel
-    // fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.APAGAR, Output.APAGAR_SELECIONAR_CELULAS); //testavel
-
-    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.COPIAR, Output.COPIAR_SELECIONAR_AREA);
-    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.CORTE, Output.CORTE_SELECIONAR_AREA);
-    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.COLAR, Output.COLAR_SELECIONAR_AREA);
-    // fg.Complementary(Speech.SELECIONAR_AREA, Gestures.APAGAR, Output.APAGAR_SELECIONAR_AREA);
     
     fg.Complementary(Speech.FECHAR,Gestures.APAGAR, Output.FECHAR); //testavel
     fg.Complementary(Speech.APAGAR,Gestures.APAGAR, Output.APAGAR); //testavel
+
     fg.Complementary(Speech.SELECIONAR_CELULAS,Gestures.LOCKIN, Output.LOCK_SELECIONAR_CELULAS);
+    fg.Complementary(Speech.PROCURAR_COLUNA, Gestures.LOCKIN, Output.LOCK_PROCURAR_COLUNA);
+    fg.Complementary(Speech.PROCURAR_LINHA, Gestures.LOCKIN, Output.LOCK_PROCURAR_LINHA);
+    fg.Complementary(Speech.PROCURAR, Gestures.LOCKIN, Output.LOCK_PROCURAR);
 
 
     //---------------------------------------Single---------------------------------------------------------------
@@ -165,7 +163,6 @@ public class GenFusionSCXML {
     fg.Single(Speech.CHANGE_COLOR, Output.CHANGE_COLOR);
     fg.Single(Speech.DEFINIR_LIMITES, Output.DEFINIR_LIMITES);
     fg.Single(Speech.SALVAR, Output.SALVAR);
-    // fg.Single(Speech.FECHAR, Output.FECHAR);
     fg.Single(Speech.AJUDA, Output.AJUDA);
     fg.Single(Speech.LIMPAR, Output.LIMPAR);
     fg.Single(Speech.DIRECIONAR, Output.DIRECIONAR);
@@ -181,6 +178,11 @@ public class GenFusionSCXML {
     fg.Single(Speech.GOODBYE, Output.GOODBYE);
     fg.Single(Speech.AFFIRM, Output.AFFIRM);
     fg.Single(Speech.DENY, Output.DENY);
+    
+    fg.Single(Speech.SELECIONAR_X_AREA, Output.SELECIONAR_X_AREA);
+    fg.Single(Speech.PROCURAR_COLUNA, Output.PROCURAR_COLUNA);
+    fg.Single(Speech.PROCURAR_LINHA, Output.PROCURAR_LINHA);
+
 
 
     //gesture
@@ -197,7 +199,6 @@ public class GenFusionSCXML {
    
     //---------------------------------------Reduntante--------------------------------------------------------
     fg.Redundancy(Speech.COLAR, Gestures.COLAR, Output.COLAR);
-    // fg.Redundancy(Speech.APAGAR, Gestures.APAGAR, Output.APAGAR);
     fg.Redundancy(Speech.CORTAR, Gestures.CORTE, Output.CORTAR); //testavel
     fg.Redundancy(Speech.COPIAR, Gestures.COPIAR, Output.COPIAR);
 

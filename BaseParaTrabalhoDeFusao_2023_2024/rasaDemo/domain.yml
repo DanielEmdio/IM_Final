@@ -30,6 +30,10 @@ intents:
 - selecionar_linha
 - selecionar_coluna
 
+- selecionar_x_area
+- procurar_coluna
+- procurar_linha
+
 entities:
 #- celula-1
 #- celula-2 
@@ -42,7 +46,9 @@ entities:
 - borda
 - direcao
 - formula
-
+#- socorro new
+- xfactor
+- yfactor
 
 
 slots:
@@ -119,7 +125,20 @@ slots:
     mappings:
     - type: from_entity
       entity: formula
+
+  xfactor:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: xfactor
   
+  yfactor:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: yfactor
   
 responses:
   utter_greet:
@@ -198,11 +217,19 @@ responses:
   - text: Vou procurar {valor}
 
   utter_linha:
-  - text: Selecionar linha
+  - text: Selecionar linha toda
 
   utter_coluna:
-  - text: Selecionar coluna
+  - text: Selecionar coluna toda
 
+  utter_x_area:
+  - text: Area {xfactor} por {yfactor}
+
+  utter_procurar_coluna:
+  - text: Vou para a coluna {valor}
+
+  utter_procurar_linha:
+  - text: Vou para a linha {valor}
 
 
 

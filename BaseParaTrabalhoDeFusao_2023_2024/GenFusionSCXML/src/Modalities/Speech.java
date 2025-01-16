@@ -28,6 +28,9 @@ public enum Speech implements IModality{
 	FECHAR("[SPEECH][FECHAR]",1500),
 	APAGAR("[SPEECH][APAGAR]",1500),
 
+	PROCURAR_COLUNA("[SPEECH][PROCURAR_COLUNA]", 1500),
+	PROCURAR_LINHA("[SPEECH][PROCURAR_LINHA]", 1500),
+
 	//----------------------------Single----------------------------
 	ALTERAR_TAMANHO_TEXTO("[SPEECH][ALTERAR_TAMANHO_TEXTO]",1500),
 	DIMINUIR_TAMANHO_TEXTO("[SPEECH][DIMINUIR_TAMANHO_TEXTO]",1500),
@@ -51,7 +54,8 @@ public enum Speech implements IModality{
 	AFFIRM("[SPEECH][AFFIRM]",1500),
 	DENY("[SPEECH][DENY]",1500),
 
-	
+	SELECIONAR_X_AREA("[SPEECH][SELECIONAR_X_AREA]", 1500),
+
 	//---------------------------Reduntante--------------------------
 	COPIAR("[SPEECH][COPIAR]",1500),
 	COLAR("[SPEECH][COLAR]",1500),

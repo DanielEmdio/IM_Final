@@ -129,6 +129,20 @@ rules:
   - intent: selecionar_coluna
   - action: utter_coluna
 
+- rule: selecionar_x_area
+  steps:
+  - intent: selecionar_x_area
+  - action: utter_x_area
+
+- rule: procurar_coluna
+  steps:
+  - intent: procurar_coluna
+  - action: utter_procurar_coluna
+
+- rule: procurar_linha
+  steps:
+  - intent: procurar_linha
+  - action: utter_procurar_linha
 
 
 # - rule: Add_reminder to calendar
