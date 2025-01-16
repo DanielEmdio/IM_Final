@@ -71,31 +71,45 @@ namespace Excel2_0
 
                 var result = new Dictionary<string, string>();
 
-                // Process first command node for FUSION intent
-                var fusionCommand = JsonDocument.Parse(commandNodes[0].InnerText);
-                var recognized = fusionCommand.RootElement.GetProperty("recognized").EnumerateArray();
-                var intentValue = recognized.ElementAtOrDefault(1).GetString();
-                if (intentValue != null)
+                foreach (XmlNode commandNode in commandNodes)
                 {
-                    result["intent"] = intentValue;
-                }
+                    var command = JsonDocument.Parse(commandNode.InnerText);
+                    var recognized = command.RootElement.GetProperty("recognized").EnumerateArray();
+                    var commandType = recognized.ElementAtOrDefault(0).GetString();
 
-                // Process second command node for entities
-                if (commandNodes.Count > 1)
-                {
-                    var textCommand = JsonDocument.Parse(commandNodes[1].InnerText);
-                    if (textCommand.RootElement.TryGetProperty("nlu", out var nluElement))
+                    switch (commandType)
                     {
-                        var entities = nluElement.GetProperty("entities");
-                        foreach (var entity in entities.EnumerateArray())
-                        {
-                            var entityType = entity.GetProperty("entity").GetString();
-                            var entityValue = entity.GetProperty("value").GetString();
-                            if (entityType != null && entityValue != null)
+                        case "FUSION":
+                            var fusionIntent = recognized.ElementAtOrDefault(1).GetString();
+                            if (fusionIntent != null)
                             {
-                                result[entityType] = entityValue;
+                                result["intent"] = fusionIntent;
                             }
-                        }
+                            break;
+
+                        case "GESTURES":
+                            var gestureType = recognized.ElementAtOrDefault(1).GetString();
+                            if (gestureType != null)
+                            {
+                                result["gesture"] = gestureType.ToLower();
+                            }
+                            break;
+
+                        case "SPEECH":
+                            if (command.RootElement.TryGetProperty("nlu", out var nluElement))
+                            {
+                                var entities = nluElement.GetProperty("entities");
+                                foreach (var entity in entities.EnumerateArray())
+                                {
+                                    var entityType = entity.GetProperty("entity").GetString();
+                                    var entityValue = entity.GetProperty("value").GetString();
+                                    if (entityType != null && entityValue != null)
+                                    {
+                                        result[entityType] = entityValue;
+                                    }
+                                }
+                            }
+                            break;
                     }
                 }
 

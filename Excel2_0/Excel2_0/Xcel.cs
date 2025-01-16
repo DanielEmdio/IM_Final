@@ -203,7 +203,7 @@ namespace Excel2_0
                         }
                         else if (intent == "affirm")
                         {
-                            Console.WriteLine($"Ok, ficamos na celula {foundCells[0].Item1}, {foundCells[0].Item2} ");
+                            await App.SendMessage(client, App.messageMMI($"Ok, ficamos na celula {foundCells[0].Item1}, {GetColumnLetter(foundCells[0].Item2)} "));
                             foundCells.Clear();
                             LastIntent = null;
                         }
@@ -512,6 +512,11 @@ namespace Excel2_0
 
         public void Copy(ExcelRange cell) {
             cell.Copy();
+        }
+
+        public void Cut(ExcelRange cell)
+        {
+            cell.Cut();
         }
 
         public void Delete(ExcelRange cell)
@@ -1447,8 +1452,7 @@ namespace Excel2_0
                 }
             }
             //execution
-            Copy(range);
-            Delete(range);
+            Cut(range);
             Console.WriteLine($"Cutted value at row {range.Row}, column {range.Column}");
             await App.SendMessage(client, App.messageMMI($"Cortei o conteudo da celula {range.Row}, {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
@@ -1478,7 +1482,7 @@ namespace Excel2_0
 
             //execution
             WriteToCell(range, value);
-            await ChangeTextStyle(range, "negrito");
+            range.Font.Bold = true;
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
             await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo negrito na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
@@ -1508,7 +1512,7 @@ namespace Excel2_0
 
             //execution
             WriteToCell(range, value);
-            await ChangeTextStyle(range, "itálico");
+            range.Font.Italic = true;
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
             await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo italico na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
@@ -1537,7 +1541,7 @@ namespace Excel2_0
 
             //execution
             WriteToCell(range, value);
-            await ChangeTextStyle(range, "sublinhado");
+            range.Font.Underline = true;
             Console.WriteLine($"Writed {value} at row {range.Row}, column {range.Column}, Bold Style");
             await App.SendMessage(client, App.messageMMI($"Escrevi {value}, estilo sublinhado na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
             await Task.CompletedTask;
@@ -1677,12 +1681,12 @@ namespace Excel2_0
                 }
                 else
                 {
-                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} em {FoundCells.Count} células"));
+                    // await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} em {FoundCells.Count} células"));
                     Console.WriteLine($"Found {FoundCells.Count} cells with value {data["valor"]}");
 
                     ExcelRange excelRange = ws.Cells[FoundCells[0].Item1, FoundCells[0].Item2];
                     SelectCell(excelRange);
-                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} na linha {FoundCells[0].Item1} coluna {GetColumnLetter(FoundCells[0].Item2)}. É esta a celula que tu queres?"));
+                    await App.SendMessage(client, App.messageMMI($"Encontrei {data["valor"]} em {FoundCells.Count} células, na linha {FoundCells[0].Item1} coluna {GetColumnLetter(FoundCells[0].Item2)}. É esta a celula que tu queres?"));
                     LastIntent = "search";
                     foundCells = FoundCells;
                     //await App.SendMessage(client, App.messageMMI($"E esta a celula que tu queres?"));
@@ -1737,7 +1741,8 @@ namespace Excel2_0
             int row = Cell.Row;
 
             // Select the entire column
-            ExcelRange range = ws.Columns[row].Select();
+            ws.Rows[row].Select();
+            ExcelRange range = ws.Rows[row];
             previousSelectedCell = range;
             selectedCell = range;
 

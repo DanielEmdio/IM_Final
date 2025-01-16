@@ -189,6 +189,11 @@ public class GenFusionSCXML {
     // fg.Single(Gestures.ZOOMIN, Output.ZOOMIN);
     // fg.Single(Gestures.ZOOMOUT, Output.ZOOMOUT);
 
+    fg.Single(Gestures.SCROLLUP, Output.SCROLLUP);
+    fg.Single(Gestures.SCROLLDOWN, Output.SCROLLDOWN);
+    fg.Single(Gestures.SCROLLLEFT, Output.SCROLLLEFT);
+    fg.Single(Gestures.SCROLLRIGHT, Output.SCROLLRIGHT);
+
    
     //---------------------------------------Reduntante--------------------------------------------------------
     fg.Redundancy(Speech.COLAR, Gestures.COLAR, Output.COLAR);

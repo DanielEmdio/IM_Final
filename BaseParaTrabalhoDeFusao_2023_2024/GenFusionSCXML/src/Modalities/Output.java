@@ -85,6 +85,11 @@ public enum Output implements IOutput{
     WS_NEXT("[FUSION][NEXTWS]"),
     ZOOMIN("[FUSION][ZOOMIN]"),
     ZOOMOUT("[FUSION][ZOOMOUT]"),
+
+    SCROLLUP("[FUSION][SCROLLUP]"),
+    SCROLLDOWN("[FUSION][SCROLLDOWN]"),
+    SCROLLLEFT("[FUSION][SCROLLLEFT]"),
+    SCROLLRIGHT("[FUSION][SCROLLRIGHT]"),
     
     //--------------Reduntante-----------------------------
     COLAR("[FUSION][COLAR]"),

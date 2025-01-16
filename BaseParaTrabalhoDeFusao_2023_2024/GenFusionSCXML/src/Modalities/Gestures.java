@@ -15,12 +15,17 @@ public enum Gestures implements IModality{
     ITALICO("[GESTURES][ITALIC]",4000), //por implmentar
     SUBLINHADO("[GESTURES][UNDERLINE]",4000), //por implmentar
 
-    CORTE("[GESTURES][CUT]",4000), 
+    CORTE("[GESTURES][CUT]",1500), 
     APAGAR("[GESTURES][DELETE]", 4000), 
     COPIAR("[GESTURES][COPIAR]",4000), //por implmentar
     COLAR("[GESTURES][PASTE]", 4000), //mal implementado
 
-    LOCKIN("[GESTURES][LOCKIN]", 4000) //por implementar
+    LOCKIN("[GESTURES][LOCKI]", 4000), //por implementar
+
+    SCROLLUP("[GESTURES][SCROLLU]", 1500), //por implementar
+    SCROLLDOWN("[GESTURES][SCROLLD]", 1500), //por implementar
+    SCROLLLEFT("[GESTURES][SCROLLL]", 1500), //por implementar
+    SCROLLRIGHT("[GESTURES][SCROLLR]", 1500), //por implementar
 
     //----------------------------Single----------------------------
     // WS_PREVIOUS("[GESTURES][PREVIOUSWS]",5000), 
