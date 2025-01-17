@@ -27,51 +27,41 @@
   </Gesture>
   <Gesture>
     <ID>5</ID>
-    <NAME>NextWS</NAME>
-    <SEMANTIC>NextWS</SEMANTIC>
-  </Gesture>
-  <Gesture>
-    <ID>6</ID>
     <NAME>Paste</NAME>
     <SEMANTIC>Paste</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>7</ID>
-    <NAME>PreviousWS</NAME>
-    <SEMANTIC>PreviousWS</SEMANTIC>
-  </Gesture>
-  <Gesture>
-    <ID>8</ID>
+    <ID>6</ID>
     <NAME>ScrollDown</NAME>
     <SEMANTIC>ScrollD</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>9</ID>
+    <ID>7</ID>
     <NAME>ScrollLeft</NAME>
     <SEMANTIC>ScrollL</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>10</ID>
+    <ID>8</ID>
     <NAME>ScrollRight</NAME>
     <SEMANTIC>ScrollR</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>11</ID>
+    <ID>9</ID>
     <NAME>ScrollUp</NAME>
     <SEMANTIC>ScrollU</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>12</ID>
+    <ID>10</ID>
     <NAME>Underline</NAME>
     <SEMANTIC>Underline</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>13</ID>
+    <ID>11</ID>
     <NAME>ZoomIn</NAME>
     <SEMANTIC>ZoomI</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>14</ID>
+    <ID>12</ID>
     <NAME>ZoomOut</NAME>
     <SEMANTIC>ZoomO</SEMANTIC>
   </Gesture>

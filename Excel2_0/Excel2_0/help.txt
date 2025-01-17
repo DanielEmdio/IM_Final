@@ -1,23 +1,3 @@
 Olá! Eu sou o assistente de voz Excel. Aqui está o que posso fazer por ti:
 Navegação:
 Selecionar células específicas (ex: "vai para A1")
-Criar áreas de seleção (ex: "faz uma área até B5")
-Mover entre células (direita, esquerda, acima, abaixo)
-Edição:
-Escrever conteúdo nas células
-Copiar e colar
-Apagar conteúdo
-Formatação:
-Mudar cores do texto e preenchimento
-Ajustar tamanho do texto (aumentar, diminuir ou definir tamanho específico)
-Aplicar estilos (negrito, itálico, sublinhado)
-Adicionar ou remover bordas
-Limpar formatação
-Cálculos:
-Realizar operações matemáticas básicas (soma, média, mediana, máximo, mínimo)
-Outras funções:
-Salvar arquivo
-Fechar arquivo
-Verificar posição atual ("em que célula estou?")
-
-Para usar qualquer função, basta falar naturalmente comigo. O que posso fazer por ti?

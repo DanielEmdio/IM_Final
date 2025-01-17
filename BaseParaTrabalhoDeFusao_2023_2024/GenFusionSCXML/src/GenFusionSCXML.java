@@ -140,19 +140,19 @@ public class GenFusionSCXML {
     fg.Complementary(Speech.ESCREVER_CONTEUDO, Gestures.SUBLINHADO, Output.SUBLINHADO_ESCREVER_CONTEUDO); 
 
     fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COPIAR, Output.COPIAR_SELECIONAR_CELULAS);
-    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.CORTE, Output.CORTE_SELECIONAR_CELULAS); //testavel
-    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COLAR, Output.COLAR_SELECIONAR_CELULAS); //testavel
+    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.CORTE, Output.CORTE_SELECIONAR_CELULAS);
+    fg.Complementary(Speech.SELECIONAR_CELULAS, Gestures.COLAR, Output.COLAR_SELECIONAR_CELULAS);
     
-    fg.Complementary(Speech.FECHAR,Gestures.APAGAR, Output.FECHAR); //testavel
-    fg.Complementary(Speech.APAGAR,Gestures.APAGAR, Output.APAGAR); //testavel
+    fg.Complementary(Speech.FECHAR,Gestures.APAGAR, Output.FECHAR);
+    fg.Complementary(Speech.APAGAR,Gestures.APAGAR, Output.APAGAR);
 
     fg.Complementary(Speech.SELECIONAR_CELULAS,Gestures.LOCKIN, Output.LOCK_SELECIONAR_CELULAS);
     fg.Complementary(Speech.PROCURAR_COLUNA, Gestures.LOCKIN, Output.LOCK_PROCURAR_COLUNA);
     fg.Complementary(Speech.PROCURAR_LINHA, Gestures.LOCKIN, Output.LOCK_PROCURAR_LINHA);
     fg.Complementary(Speech.PROCURAR, Gestures.LOCKIN, Output.LOCK_PROCURAR);
 
-    fg.Complementary(Speech.WS, Gestures.WS_PREVIOUS, Output.WS_PREVIOUS);
-    fg.Complementary(Speech.WS, Gestures.WS_NEXT, Output.WS_NEXT);
+    fg.Complementary(Speech.WS, Gestures.SCROLLLEFT, Output.WS_PREVIOUS);
+    fg.Complementary(Speech.WS, Gestures.SCROLLRIGHT, Output.WS_NEXT);
 
 
     //---------------------------------------Single---------------------------------------------------------------
@@ -198,9 +198,9 @@ public class GenFusionSCXML {
     fg.Single(Gestures.SCROLLRIGHT, Output.SCROLLRIGHT);
 
    
-    //---------------------------------------Reduntante--------------------------------------------------------
+    //---------------------------------------Redundant--------------------------------------------------------
     fg.Redundancy(Speech.COLAR, Gestures.COLAR, Output.COLAR);
-    fg.Redundancy(Speech.CORTAR, Gestures.CORTE, Output.CORTAR); //testavel
+    fg.Redundancy(Speech.CORTAR, Gestures.CORTE, Output.CORTAR);
     fg.Redundancy(Speech.COPIAR, Gestures.COPIAR, Output.COPIAR);
 
 

@@ -22,8 +22,8 @@ public enum Gestures implements IModality{
 
     LOCKIN("[GESTURES][LOCKI]", 4000), //por implementar
 
-    WS_PREVIOUS("[GESTURES][PREVIOUSWS]",5000), 
-    WS_NEXT("[GESTURES][NEXTWS]",5000),
+    // WS_PREVIOUS("[GESTURES][PREVIOUSWS]",5000), 
+    // WS_NEXT("[GESTURES][NEXTWS]",5000),
 
     //----------------------------Single----------------------------
     
