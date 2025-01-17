@@ -151,6 +151,9 @@ public class GenFusionSCXML {
     fg.Complementary(Speech.PROCURAR_LINHA, Gestures.LOCKIN, Output.LOCK_PROCURAR_LINHA);
     fg.Complementary(Speech.PROCURAR, Gestures.LOCKIN, Output.LOCK_PROCURAR);
 
+    fg.Complementary(Speech.WS, Gestures.WS_PREVIOUS, Output.WS_PREVIOUS);
+    fg.Complementary(Speech.WS, Gestures.WS_NEXT, Output.WS_NEXT);
+
 
     //---------------------------------------Single---------------------------------------------------------------
     //speech
@@ -178,6 +181,7 @@ public class GenFusionSCXML {
     fg.Single(Speech.GOODBYE, Output.GOODBYE);
     fg.Single(Speech.AFFIRM, Output.AFFIRM);
     fg.Single(Speech.DENY, Output.DENY);
+    fg.Single(Speech.ORIGEM, Output.ORIGEM);
     
     fg.Single(Speech.SELECIONAR_X_AREA, Output.SELECIONAR_X_AREA);
     fg.Single(Speech.PROCURAR_COLUNA, Output.PROCURAR_COLUNA);
@@ -186,11 +190,8 @@ public class GenFusionSCXML {
 
 
     //gesture
-    // fg.Single(Gestures.WS_PREVIOUS, Output.WS_PREVIOUS);
-    // fg.Single(Gestures.WS_NEXT, Output.WS_NEXT);
-    // fg.Single(Gestures.ZOOMIN, Output.ZOOMIN);
-    // fg.Single(Gestures.ZOOMOUT, Output.ZOOMOUT);
-
+    fg.Single(Gestures.ZOOMIN, Output.ZOOMIN);
+    fg.Single(Gestures.ZOOMOUT, Output.ZOOMOUT);
     fg.Single(Gestures.SCROLLUP, Output.SCROLLUP);
     fg.Single(Gestures.SCROLLDOWN, Output.SCROLLDOWN);
     fg.Single(Gestures.SCROLLLEFT, Output.SCROLLLEFT);

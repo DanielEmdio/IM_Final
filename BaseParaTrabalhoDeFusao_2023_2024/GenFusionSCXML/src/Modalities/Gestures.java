@@ -18,21 +18,22 @@ public enum Gestures implements IModality{
     CORTE("[GESTURES][CUT]",1500), 
     APAGAR("[GESTURES][DELETE]", 4000), 
     COPIAR("[GESTURES][COPIAR]",4000), //por implmentar
-    COLAR("[GESTURES][PASTE]", 4000), //mal implementado
+    COLAR("[GESTURES][PASTE]", 4000), 
 
     LOCKIN("[GESTURES][LOCKI]", 4000), //por implementar
 
+    WS_PREVIOUS("[GESTURES][PREVIOUSWS]",5000), 
+    WS_NEXT("[GESTURES][NEXTWS]",5000),
+
+    //----------------------------Single----------------------------
+    
+
+    ZOOMIN("[GESTURES][ZOOMIN]",5000),
+    ZOOMOUT("[GESTURES][ZOOMOUT]",5000),
     SCROLLUP("[GESTURES][SCROLLU]", 1500), //por implementar
     SCROLLDOWN("[GESTURES][SCROLLD]", 1500), //por implementar
     SCROLLLEFT("[GESTURES][SCROLLL]", 1500), //por implementar
     SCROLLRIGHT("[GESTURES][SCROLLR]", 1500), //por implementar
-
-    //----------------------------Single----------------------------
-    // WS_PREVIOUS("[GESTURES][PREVIOUSWS]",5000), 
-    // WS_NEXT("[GESTURES][PREVIOUSWS]",5000),
-    // ZOOMIN("[GESTURES][ZOOMIN]",5000),
-    // ZOOMOUT("[GESTURES][ZOOMOUT]",5000),
-   
 
     ;
     

@@ -116,23 +116,25 @@ namespace Excel2_0
                 ["scrollleft"] = HandleScrollLeft,
                 ["scrollright"] = HandleScrollRight,
                 ["cortar"] = HandleCut,
-                //["nextws"] = HandleNextWS,
-                //["previousws"] = HandlePreviousWS,
-                //["zoomin"] = HandleZoomIn,
-                //["zoomout"] = HandleZoomOut,
-                //Posso tambem por negrito,italico,sublinhado
+                ["ws_next"] = HandleNextWS,
+                ["ws_previous"] = HandlePreviousWS,
+                ["zoomin"] = HandleZoomIn,
+                ["zoomout"] = HandleZoomOut,
+
 
                 //---------------------Versão Fusion--------------------------
+                ["origem"] = HandleOrigem,
                 ["bold_escrever_conteudo"] = HandleBoldWrite,
                 ["italico_escrever_conteudo"] = HandleItalicWrite,
                 ["sublinhado_escrever_conteudo"] = HandleUnderlineWrite,
-                //["copiar_selecionar_celulas"] = HandleCopySelectedCell,
+
+                ["copiar_selecionar_celulas"] = HandleCopySelectedCell,
                 ["corte_selecionar_celulas"] = HandleCutSelectedCell,
                 ["colar_selecionar_celulas"] = HandlePasteSelectedCell,
+
                 ["procurar"] = HandleSearch,
                 ["selecionar_coluna"] = HandleAllColSelect,
                 ["selecionar_linha"] = HandleAllRowSelect,
-
                 ["selecionar_x_area"] = HandleSelectX,
                 ["procurar_coluna"] = HandleSelectCol,
                 ["procurar_linha"] = HandleSelectRow,
@@ -594,6 +596,19 @@ namespace Excel2_0
             catch (Exception ex)
             {
                 Console.WriteLine($"Error cutting cell content: {ex.Message}");
+                throw;
+            }
+        }
+
+        public void Soft_Delete(ExcelRange cell)
+        {
+            try
+            {
+                cell.ClearContents();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting cell content: {ex.Message}");
                 throw;
             }
         }
@@ -1318,7 +1333,7 @@ namespace Excel2_0
             //execution
             Console.WriteLine($"Deleted value at row {range.Row}, column {range.Column}");
             await App.SendMessage(client, App.messageMMI($"Apaguei o que estava na celula da linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
-            Delete(range);
+            Soft_Delete(range);
             await Task.CompletedTask;
         }
 
@@ -1530,6 +1545,106 @@ namespace Excel2_0
             await Task.CompletedTask;
         }
 
+        private async Task HandleNextWS(Dictionary<string, string> nluData)
+        {
+            // Get the current worksheet index
+            int currentSheetIndex = ws.Index;
+            int totalSheets = wb.Worksheets.Count;
+
+            // If we're at the last worksheet, create a new one
+            if (currentSheetIndex == totalSheets)
+            {
+                // Create a new worksheet at the end
+                Worksheet newWorksheet = wb.Worksheets.Add(After: wb.Worksheets[totalSheets]);
+                ws = newWorksheet;
+
+                // Optional: Name the new worksheet
+                newWorksheet.Name = $"Sheet{totalSheets + 1}";
+            }
+            else
+            {
+                // Move to the next worksheet
+                ws = wb.Worksheets[currentSheetIndex + 1];
+            }
+
+            // Make the new worksheet visible and active
+            ws.Activate();
+            excel.ActiveWindow.Visible = true;
+
+            Console.WriteLine($"Moved to worksheet {ws.Name} (Index: {ws.Index})");
+            await App.SendMessage(client, App.messageMMI($"Mudei para a worksheet {ws.Name}"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandlePreviousWS(Dictionary<string, string> nluData)
+        {
+
+            // Get the current worksheet index
+            int currentSheetIndex = ws.Index;
+
+            // If we're at the first worksheet, create a new worksheet at the beginning
+            if (currentSheetIndex == 1)
+            {
+                // Create a new worksheet before the first worksheet
+                Worksheet newWorksheet = wb.Worksheets.Add(Before: wb.Worksheets[1]);
+                ws = newWorksheet;
+
+                // Optional: Name the new worksheet
+                //newWorksheet.Name = $"Sheet0";
+            }
+            else
+            {
+                // Move to the previous worksheet
+                ws = wb.Worksheets[currentSheetIndex - 1];
+            }
+
+            // Make the new worksheet visible and active
+            ws.Activate();
+            excel.ActiveWindow.Visible = true;
+
+            // Optional: Send confirmation back to the client if needed
+            /*if (client != null)
+            {
+                string message = $"Moved to worksheet {ws.Name} (Index: {ws.Index})";
+                // Implement your WebSocket send method here
+                // await SendWebSocketMessage(message);
+            }*/
+            await App.SendMessage(client, App.messageMMI($"Mudei para a worksheet {ws.Name}"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleZoomIn(Dictionary<string, string> nluData)
+        {
+            // Get the current zoom level
+            double zoomLevel = ws.Application.ActiveWindow.Zoom;
+
+            // Increase the zoom level by 10%
+            zoomLevel += 10;
+
+            // Set the new zoom level
+            ws.Application.ActiveWindow.Zoom = zoomLevel;
+
+            Console.WriteLine($"Zoomed in to {zoomLevel}%");
+            await App.SendMessage(client, App.messageMMI($"Ampliei o zoom para {zoomLevel} porcento"));
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleZoomOut(Dictionary<string, string> nluData)
+        {
+            // Get the current zoom level
+            double zoomLevel = ws.Application.ActiveWindow.Zoom;
+
+            // Decrease the zoom level by 10%
+            zoomLevel -= 10;
+
+            // Set the new zoom level
+            ws.Application.ActiveWindow.Zoom = zoomLevel;
+
+            Console.WriteLine($"Zoomed out to {zoomLevel}%");
+            await App.SendMessage(client, App.messageMMI($"Diminui o zoom para {zoomLevel} porcento"));
+            await Task.CompletedTask;
+        }
+
         private async Task HandleScrollUp(Dictionary<string, string> nluData)
         {
             // Scroll up by 1 row
@@ -1717,7 +1832,33 @@ namespace Excel2_0
                 return;
             }
         }
-        
+
+        private async Task HandleCopySelectedCell(Dictionary<string, string> data)
+        {
+            if (!ValidateRequiredFields(data, "celula"))
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpa nao percebi para que celula queres mudar"));
+                Console.WriteLine("Missing cell value");
+                return;
+
+            } // Exit and wait for next message
+            try
+            {
+                ExcelRange range = ParseExcelReference(data["celula"]);
+                SelectCell(range);
+                Copy(range);
+                Console.WriteLine($"Copy cell at row {range.Row}, column {range.Column}");
+                await App.SendMessage(client, App.messageMMI($"Copiei o valor da celula na linha {range.Row}, coluna {GetColumnLetter(range.Column)}"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Valor de celula invalido, podes repetir por favor"));
+                Console.WriteLine("Invalid cell");
+                return;
+            }
+        }
+
         private async Task HandlePasteSelectedCell(Dictionary<string, string> data)
         {
             if (!ValidateRequiredFields(data, "celula"))
@@ -1769,7 +1910,25 @@ namespace Excel2_0
                 return;
             }
         }
-        
+
+        private async Task HandleOrigem(Dictionary<string, string> data){
+            try
+            {
+                ExcelRange range = ParseExcelReference("A1");
+                SelectCell(range);
+                Console.WriteLine("Back to origin");
+                await App.SendMessage(client, App.messageMMI("Estamos no inicio, Celula A1 selecionada"));
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                await App.SendMessage(client, App.messageMMI("Desculpe não consigo voltar ao inicio de momento"));
+                Console.WriteLine("Error during back to origin");
+                return;
+            }
+        }
+
+
         private async Task HandleLockSelectedCell(Dictionary<string, string> data)
         {
             if (!ValidateRequiredFields(data, "celula"))

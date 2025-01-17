@@ -144,6 +144,15 @@ rules:
   - intent: procurar_linha
   - action: utter_procurar_linha
 
+- rule: ws
+  steps:
+  - intent: ws
+  - action: utter_ws
+
+- rule: origem
+  steps:
+  - intent: origem
+  - action: utter_origem
 
 # - rule: Add_reminder to calendar
 #   steps:

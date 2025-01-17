@@ -570,6 +570,29 @@ nlu:
     - mostra a linha [resultado](valor)
     - desloca até a linha [total](valor)
 
+- intent: ws
+  examples: |
+    - mudar ws
+    - alterar worksheet
+    - trocar de worksheet
+    - mudar de aba
+    - alterar planilha
+    - ir para outra worksheet
+    - selecionar outra aba
+    - escolher outra planilha
+
+- intent: origem
+  examples: |
+    - voltar ao inicio
+    - origem
+    - vai para o inicio
+    - voltar para a origem
+    - ir para o começo
+    - retornar ao início
+    - começar do início
+    - ir para o início
+    - voltar ao ponto inicial
+
 - regex: celula
   examples: |
     - [A-Za-z]+[0-9]+

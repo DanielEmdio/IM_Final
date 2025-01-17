@@ -29,10 +29,12 @@ intents:
 - procurar
 - selecionar_linha
 - selecionar_coluna
-
 - selecionar_x_area
 - procurar_coluna
 - procurar_linha
+
+- ws
+- origem
 
 entities:
 #- celula-1
@@ -231,6 +233,11 @@ responses:
   utter_procurar_linha:
   - text: Vou para a linha {valor}
 
+  utter_ws:
+  - text: Mudar WS
+
+  utter_origem:
+  - text: Vou para o inicio
 
 
 actions:
